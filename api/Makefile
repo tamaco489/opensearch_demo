@@ -23,8 +23,10 @@ api-all-request: healthcheck sleep \
 	create-customer \
 	delete-customer \
 	get-product-comments \
-	get-product-my-comments-by-id \
-	create-product-comment
+	create-product-comment \
+	get-product-my-comment \
+	update-product-my-comment \
+	delete-product-my-comment
 
 # 生存確認API
 .PHONY: healthcheck
@@ -83,10 +85,23 @@ create-product-comment:
 		-H 'Content-Type: application/json' \
 		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}' | jq .
 
-get-product-my-comments-by-id:
-	curl -sX 'GET' \
+get-product-my-comment:
+	curl -sX 'GET' \ \
+	curl -sX 'GET' \ \
 		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
+
+update-product-my-comment:
+	curl -i -X 'PUT' \
+		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		-H 'accept: */*' \
+		-H 'Content-Type: application/json' \
+		-d '{"title": "まずまず商品でした", "content": "価格が少し高いです。", "rate": 3}'
+
+delete-product-my-comment:
+	curl -i -X 'DELETE' \
+		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		-H 'accept: */*'
 
 # 外部決済サービス向け顧客情報系API
 .PHONY: get-customer create-customer delete-customer

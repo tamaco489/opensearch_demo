@@ -4,7 +4,7 @@ get:
     - products/users/comments
   summary: Get product my comment details
   description: 指定した商品情報に対する自身のコメント情報を取得する
-  operationId: getProductMyCommentByID
+  operationId: getProductMyComment
   parameters:
     - name: productID
       in: path
@@ -28,7 +28,85 @@ get:
       content:
         application/json:
           schema:
-            $ref: '../schemas/GetMyCommentByID.yaml'
+            $ref: '../schemas/GetMyCommentByIDResponse.yaml'
+    '400':
+      $ref: '../../../../responses/BadRequest.yaml'
+    '401':
+      $ref: '../../../../responses/Unauthorized.yaml'
+    '404':
+      $ref: '../../../../responses/NotFound.yaml'
+    '500':
+      $ref: '../../../../responses/InternalServerError.yaml'
+
+put:
+  tags:
+    - v1
+    - products/users/comments
+  summary: Create or update product comment
+  description: 指定した商品情報に対するコメントを更新する
+  operationId: updateProductMyComment
+  parameters:
+    - name: productID
+      in: path
+      description: 商品ID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 10001001
+    - name: commentID
+      in: path
+      description: コメントID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 54009221
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/UpdateProductCommentRequest.yaml'
+  responses:
+    '204':
+      description: コメントの更新に成功しました。
+    '400':
+      $ref: '../../../../responses/BadRequest.yaml'
+    '401':
+      $ref: '../../../../responses/Unauthorized.yaml'
+    '404':
+      $ref: '../../../../responses/NotFound.yaml'
+    '500':
+      $ref: '../../../../responses/InternalServerError.yaml'
+
+delete:
+  tags:
+    - v1
+    - products/users/comments
+  summary: Delete product comment
+  description: 指定した商品情報に対するコメントを削除する
+  operationId: deleteProductMyComment
+  parameters:
+    - name: productID
+      in: path
+      description: 商品ID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 10001001
+    - name: commentID
+      in: path
+      description: コメントID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 54009221
+  responses:
+    '204':
+      description: コメントの削除に成功しました。
     '400':
       $ref: '../../../../responses/BadRequest.yaml'
     '401':

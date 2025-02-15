@@ -209,8 +209,8 @@ type CreditCardList struct {
 	MaskedCardNumber string `json:"masked_card_number"`
 }
 
-// GetMyCommentByID defines model for GetMyCommentByID.
-type GetMyCommentByID struct {
+// GetMyCommentByIDResponse defines model for GetMyCommentByIDResponse.
+type GetMyCommentByIDResponse struct {
 	// Content コメントの本文
 	Content string `json:"content"`
 
@@ -389,6 +389,18 @@ type ReservationResponse struct {
 	ReservationId string `json:"reservation_id"`
 }
 
+// UpdateProductCommentRequest defines model for UpdateProductCommentRequest.
+type UpdateProductCommentRequest struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+}
+
 // GetChargeHistoriesParams defines parameters for GetChargeHistories.
 type GetChargeHistoriesParams struct {
 	// Offset 取得を開始する注文のインデックス。最初のページは0を指定。
@@ -432,6 +444,9 @@ type CreateReservationJSONRequestBody = ReservationRequest
 
 // CreateProductCommentJSONRequestBody defines body for CreateProductComment for application/json ContentType.
 type CreateProductCommentJSONRequestBody = CreateProductCommentRequest
+
+// UpdateProductMyCommentJSONRequestBody defines body for UpdateProductMyComment for application/json ContentType.
+type UpdateProductMyCommentJSONRequestBody = UpdateProductCommentRequest
 
 // CreateProfileJSONRequestBody defines body for CreateProfile for application/json ContentType.
 type CreateProfileJSONRequestBody = Profile
