@@ -7,11 +7,11 @@ import (
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 )
 
-func (c *Controllers) GetProductMyCommentByID(ctx *gin.Context, request gen.GetProductMyCommentByIDRequestObject) (gen.GetProductMyCommentByIDResponseObject, error) {
+func (c *Controllers) GetProductMyComment(ctx *gin.Context, request gen.GetProductMyCommentRequestObject) (gen.GetProductMyCommentResponseObject, error) {
 
 	jst := time.FixedZone("JST", 9*60*60)
 
-	return gen.GetProductMyCommentByID200JSONResponse{
+	return gen.GetProductMyComment200JSONResponse{
 		Id:        54009221,
 		Title:     "とても良い商品です",
 		Content:   "この商品は非常に良いです。特にデザインが素晴らしい。",

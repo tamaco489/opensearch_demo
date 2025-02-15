@@ -291,7 +291,7 @@ paths:
         - products/users/comments
       summary: Get product my comment details
       description: 指定した商品情報に対する自身のコメント情報を取得する
-      operationId: getProductMyCommentByID
+      operationId: getProductMyComment
       parameters:
         - name: productID
           in: path
@@ -315,7 +315,83 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/GetMyCommentByID'
+                $ref: '#/components/schemas/GetMyCommentByIDResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - v1
+        - products/users/comments
+      summary: Create or update product comment
+      description: 指定した商品情報に対するコメントを更新する
+      operationId: updateProductMyComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateProductCommentRequest'
+      responses:
+        '204':
+          description: コメントの更新に成功しました。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - v1
+        - products/users/comments
+      summary: Delete product comment
+      description: 指定した商品情報に対するコメントを削除する
+      operationId: deleteProductMyComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '204':
+          description: コメントの削除に成功しました。
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -999,7 +1075,7 @@ components:
           format: uint64
           description: 投稿したコメントID
           example: 70235591
-    GetMyCommentByID:
+    GetMyCommentByIDResponse:
       type: object
       required:
         - id
@@ -1040,6 +1116,28 @@ components:
           example:
             - irrelevant
             - inappropriate
+    UpdateProductCommentRequest:
+      type: object
+      required:
+        - title
+        - content
+        - rate
+      properties:
+        title:
+          type: string
+          description: コメントのタイトル
+          example: まずまず商品でした
+        content:
+          type: string
+          description: コメントの本文
+          example: 価格が少し高いです。
+        rate:
+          type: integer
+          format: uint32
+          description: 商品に対する評価（1〜5の整数）
+          minimum: 1
+          maximum: 5
+          example: 3
     CustomerByUserID:
       type: object
       required:
