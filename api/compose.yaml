@@ -9,3 +9,46 @@ services:
       - ~/.cache/go-build:/root/.cache/go-build
     ports:
       - "8080:8080"
+    depends_on:
+      - opensearch
+    networks:
+      - sandbox
+
+  opensearch:
+    image: opensearchproject/opensearch:2.19.0
+    container_name: opensearch
+    environment:
+      - discovery.type=single-node
+      - OPENSEARCH_JAVA_OPTS=-Xmx512m -Xms512m
+      - "OPENSEARCH_USERNAME=dev"
+      - "OPENSEARCH_PASSWORD=password"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=Pf3sj366RNEY"
+    volumes:
+      - ./shop/docker/opensearch/data:/usr/share/opensearch/data
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    networks:
+      - sandbox
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 30s
+      retries: 5
+
+  opensearch-dashboards:
+    image: opensearchproject/opensearch-dashboards:2.19.0
+    container_name: opensearch-dashboards
+    environment:
+      - OPENSEARCH_HOSTS=http://opensearch:9200
+      - OPENSEARCH_USERNAME=dev
+      - OPENSEARCH_PASSWORD=password
+    ports:
+      - "5601:5601"
+    networks:
+      - sandbox
+    depends_on:
+      - opensearch
+
+networks:
+  sandbox:
+    driver: bridge
