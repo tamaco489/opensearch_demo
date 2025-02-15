@@ -4,6 +4,7 @@
 .PHONY: install-tools
 install-tools:
 	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
+	go install golang.org/x/tools/cmd/godoc@latest
 	npm i -g @redocly/cli@latest
 
 
@@ -49,3 +50,16 @@ down:
 
 logs:
 	docker compose logs -f shop-api
+
+
+# =================================================================
+# Go Doc
+# =================================================================
+.PHONY: go-doc
+go-doc:
+	# godoc サーバーを起動してブラウザで確認
+	go doc controller.NewCorsConfig
+	@echo "Starting godoc server..."
+	@godoc -http=:6060 &
+	@echo "Godoc server started at http://localhost:6060"
+	@echo "Open your browser to http://localhost:6060/pkg/github.com/tamaco489/elasticsearch_demo/api/shop/controller/"
