@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
-  title: K6 Load Test API
-  description: K6 Load Test API
+  title: opensearch demo API
+  description: opensearch demo API
   version: 1.0.0
 servers:
   - url: http://localhost:{port}/shop/
@@ -198,6 +198,53 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/products/{productID}/comments:
+    get:
+      tags:
+        - v1
+        - products/comments
+      summary: Get list of product comments by product id
+      description: 商品に対してのコメント一覧を取得します。
+      operationId: getProductCommentsByProductID
+      parameters:
+        - name: productID
+          in: path
+          description: 取得する商品の一意なID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: cursor
+          in: query
+          description: |
+            次のページの商品コメント一覧を取得するためのカーソル。
+            カーソルはコメントIDをbase64でエンコードした文字列を指定する。
+          required: false
+          schema:
+            type: string
+            example: NTQwMDkwMTI=
+            default: ''
+        - name: limit
+          in: query
+          description: |
+            取得する商品情報数を指定。
+            デフォルトは10。1度に最大20件まで取得可能。
+          required: false
+          schema:
+            type: integer
+            format: uint64
+            example: 10
+            default: 10
+            minimum: 1
+            maximum: 20
+      responses:
+        '200':
+          description: 商品コメント一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentsByProductID'
   /v1/payment/customers/{userID}:
     get:
       tags:
@@ -728,6 +775,111 @@ components:
           type: string
           description: 商品イメージのURL
           example: https://example.com/images/10001001/product.jpg
+    ReportReason:
+      type: string
+      description: コメントに対する報告理由
+      enum:
+        - irrelevant
+        - inappropriate
+        - fake
+        - other
+      example: inappropriate
+    CommentByUser:
+      title: CommentByUser
+      type: object
+      required:
+        - user_id
+        - user_name
+        - avatar_url
+      description: コメントを投稿したユーザー情報
+      properties:
+        user_id:
+          type: integer
+          format: int64
+          description: ユーザーの一意なID
+          example: 12345
+        user_name:
+          type: string
+          description: ユーザーの表示名
+          example: 潔 世一
+        avatar_url:
+          type: string
+          format: uri
+          description: ユーザーのアバター画像URL
+          example: https://example.com/avatar.jpg
+    CommentsByProductID:
+      title: GetProductComments
+      type: object
+      required:
+        - comments
+        - metadata
+      properties:
+        comments:
+          type: array
+          description: 商品に対するコメント一覧
+          items:
+            type: object
+            required:
+              - id
+              - title
+              - content
+              - created_at
+              - like_count
+              - rate
+              - report_reasons
+              - user
+            properties:
+              id:
+                type: integer
+                format: uint64
+                description: コメントの一意なID
+                example: 1000001
+              title:
+                type: string
+                description: コメントのタイトル
+                example: とても良い商品です
+              content:
+                type: string
+                description: コメントの本文
+                example: この商品は非常に良いです。特にデザインが素晴らしい。
+              created_at:
+                type: string
+                format: date-time
+                description: コメントの投稿日時（ISO 8601形式, JST）
+                example: '2025-02-15T13:45:30+09:00'
+              like_count:
+                type: integer
+                format: uint64
+                description: いいねの数
+                example: 15
+              rate:
+                type: integer
+                format: uint32
+                description: 評価（1〜5の整数）
+                minimum: 1
+                maximum: 5
+                example: 4
+              report_reasons:
+                type: array
+                description: コメントに対して報告された理由
+                items:
+                  $ref: '#/components/schemas/ReportReason'
+                example:
+                  - irrelevant
+                  - inappropriate
+              user:
+                $ref: '#/components/schemas/CommentByUser'
+            x-go-type-name: GetProductComments
+        metadata:
+          type: object
+          required:
+            - next_cursor
+          properties:
+            next_cursor:
+              type: string
+              description: 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+              example: NTQwMDk1MzY=
+          x-go-type-name: GetProductCommentsNextCursor
     CustomerByUserID:
       type: object
       required:

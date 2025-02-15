@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: K6 Load Test API
+  title: opensearch demo API
   description: |-
-    K6 Load Test API
+    opensearch demo API
   version: 1.0.0
 servers:
   - url: 'http://localhost:{port}/shop/'
@@ -55,6 +55,10 @@ paths:
     $ref: './api/v1/products/paths/Products.yaml'
   /v1/products/{productID}:
     $ref: './api/v1/products/paths/ProductByID.yaml'
+
+  # コメント系API
+  /v1/products/{productID}/comments:
+    $ref: './api/v1/products/paths/CommentsByProductID.yaml'
 
   # 外部決済サービス向け顧客情報系API
   /v1/payment/customers/{userID}:

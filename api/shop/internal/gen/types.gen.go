@@ -13,6 +13,14 @@ const (
 	BearerAuthScopes = "bearerAuth.Scopes"
 )
 
+// Defines values for ReportReason.
+const (
+	Fake          ReportReason = "fake"
+	Inappropriate ReportReason = "inappropriate"
+	Irrelevant    ReportReason = "irrelevant"
+	Other         ReportReason = "other"
+)
+
 // Addresses defines model for Addresses.
 type Addresses struct {
 	// City 市区町村
@@ -71,6 +79,58 @@ type ChargeHistoriesLimitOffset struct {
 
 	// TotalCount 履歴情報の総件数
 	TotalCount int `json:"total_count"`
+}
+
+// CommentByUser コメントを投稿したユーザー情報
+type CommentByUser struct {
+	// AvatarUrl ユーザーのアバター画像URL
+	AvatarUrl string `json:"avatar_url"`
+
+	// UserId ユーザーの一意なID
+	UserId int64 `json:"user_id"`
+
+	// UserName ユーザーの表示名
+	UserName string `json:"user_name"`
+}
+
+// CommentsByProductID defines model for CommentsByProductID.
+type CommentsByProductID struct {
+	// Comments 商品に対するコメント一覧
+	Comments []GetProductComments         `json:"comments"`
+	Metadata GetProductCommentsNextCursor `json:"metadata"`
+}
+
+// GetProductComments defines model for .
+type GetProductComments struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// CreatedAt コメントの投稿日時（ISO 8601形式, JST）
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id コメントの一意なID
+	Id uint64 `json:"id"`
+
+	// LikeCount いいねの数
+	LikeCount uint64 `json:"like_count"`
+
+	// Rate 評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+
+	// User コメントを投稿したユーザー情報
+	User CommentByUser `json:"user"`
+}
+
+// GetProductCommentsNextCursor defines model for .
+type GetProductCommentsNextCursor struct {
+	// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+	NextCursor string `json:"next_cursor"`
 }
 
 // CreateChargeRequest defines model for CreateChargeRequest.
@@ -269,6 +329,9 @@ type Profile struct {
 	Name     Name   `json:"name"`
 }
 
+// ReportReason コメントに対する報告理由
+type ReportReason string
+
 // ReservationRequest 商品IDと個数のセット
 type ReservationRequest = []struct {
 	// ProductId 予約対象となる商品ID
@@ -303,6 +366,17 @@ type GetProductsParams struct {
 	// Limit 取得する商品情報数を指定。
 	// デフォルトは10。1度に最大20件まで取得可能。
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
+// GetProductCommentsByProductIDParams defines parameters for GetProductCommentsByProductID.
+type GetProductCommentsByProductIDParams struct {
+	// Cursor 次のページの商品コメント一覧を取得するためのカーソル。
+	// カーソルはコメントIDをbase64でエンコードした文字列を指定する。
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit 取得する商品情報数を指定。
+	// デフォルトは10。1度に最大20件まで取得可能。
+	Limit *uint64 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // CreateCreditCardJSONRequestBody defines body for CreateCreditCard for application/json ContentType.

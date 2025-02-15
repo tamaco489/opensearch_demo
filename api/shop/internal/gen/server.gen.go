@@ -51,6 +51,9 @@ type ServerInterface interface {
 	// Get product details
 	// (GET /v1/products/{productID})
 	GetProductByID(c *gin.Context, productID int64)
+	// Get list of product comments by product id
+	// (GET /v1/products/{productID}/comments)
+	GetProductCommentsByProductID(c *gin.Context, productID uint64, params GetProductCommentsByProductIDParams)
 	// Create new user
 	// (POST /v1/users)
 	CreateUser(c *gin.Context)
@@ -316,6 +319,51 @@ func (siw *ServerInterfaceWrapper) GetProductByID(c *gin.Context) {
 	siw.Handler.GetProductByID(c, productID)
 }
 
+// GetProductCommentsByProductID operation middleware
+func (siw *ServerInterfaceWrapper) GetProductCommentsByProductID(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetProductCommentsByProductIDParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "cursor", c.Request.URL.Query(), &params.Cursor)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter cursor: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", c.Request.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter limit: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetProductCommentsByProductID(c, productID, params)
+}
+
 // CreateUser operation middleware
 func (siw *ServerInterfaceWrapper) CreateUser(c *gin.Context) {
 
@@ -415,6 +463,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/v1/payments/reservations", wrapper.CreateReservation)
 	router.GET(options.BaseURL+"/v1/products", wrapper.GetProducts)
 	router.GET(options.BaseURL+"/v1/products/:productID", wrapper.GetProductByID)
+	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductCommentsByProductID)
 	router.POST(options.BaseURL+"/v1/users", wrapper.CreateUser)
 	router.GET(options.BaseURL+"/v1/users/me", wrapper.GetMe)
 	router.POST(options.BaseURL+"/v1/users/profiles", wrapper.CreateProfile)
@@ -879,6 +928,24 @@ func (response GetProductByID500Response) VisitGetProductByIDResponse(w http.Res
 	return nil
 }
 
+type GetProductCommentsByProductIDRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	Params    GetProductCommentsByProductIDParams
+}
+
+type GetProductCommentsByProductIDResponseObject interface {
+	VisitGetProductCommentsByProductIDResponse(w http.ResponseWriter) error
+}
+
+type GetProductCommentsByProductID200JSONResponse CommentsByProductID
+
+func (response GetProductCommentsByProductID200JSONResponse) VisitGetProductCommentsByProductIDResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
 type CreateUserRequestObject struct {
 }
 
@@ -1087,6 +1154,9 @@ type StrictServerInterface interface {
 	// Get product details
 	// (GET /v1/products/{productID})
 	GetProductByID(ctx *gin.Context, request GetProductByIDRequestObject) (GetProductByIDResponseObject, error)
+	// Get list of product comments by product id
+	// (GET /v1/products/{productID}/comments)
+	GetProductCommentsByProductID(ctx *gin.Context, request GetProductCommentsByProductIDRequestObject) (GetProductCommentsByProductIDResponseObject, error)
 	// Create new user
 	// (POST /v1/users)
 	CreateUser(ctx *gin.Context, request CreateUserRequestObject) (CreateUserResponseObject, error)
@@ -1438,6 +1508,34 @@ func (sh *strictHandler) GetProductByID(ctx *gin.Context, productID int64) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetProductByIDResponseObject); ok {
 		if err := validResponse.VisitGetProductByIDResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetProductCommentsByProductID operation middleware
+func (sh *strictHandler) GetProductCommentsByProductID(ctx *gin.Context, productID uint64, params GetProductCommentsByProductIDParams) {
+	var request GetProductCommentsByProductIDRequestObject
+
+	request.ProductID = productID
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProductCommentsByProductID(ctx, request.(GetProductCommentsByProductIDRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProductCommentsByProductID")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetProductCommentsByProductIDResponseObject); ok {
+		if err := validResponse.VisitGetProductCommentsByProductIDResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
