@@ -69,3 +69,4 @@ properties:
         type: string
         description: 次ページへのカーソル（コメントIDをBase64にエンコードした値）
         example: "NTQwMDk1MzY="
+    x-go-type-name: GetProductCommentsNextCursor

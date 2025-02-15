@@ -96,11 +96,8 @@ type CommentByUser struct {
 // CommentsByProductID defines model for CommentsByProductID.
 type CommentsByProductID struct {
 	// Comments 商品に対するコメント一覧
-	Comments []GetProductComments `json:"comments"`
-	Metadata struct {
-		// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
-		NextCursor string `json:"next_cursor"`
-	} `json:"metadata"`
+	Comments []GetProductComments         `json:"comments"`
+	Metadata GetProductCommentsNextCursor `json:"metadata"`
 }
 
 // GetProductComments defines model for .
@@ -128,6 +125,12 @@ type GetProductComments struct {
 
 	// User コメントを投稿したユーザー情報
 	User CommentByUser `json:"user"`
+}
+
+// GetProductCommentsNextCursor defines model for .
+type GetProductCommentsNextCursor struct {
+	// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+	NextCursor string `json:"next_cursor"`
 }
 
 // CreateChargeRequest defines model for CreateChargeRequest.
