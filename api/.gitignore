@@ -30,7 +30,7 @@ go.work
 shop_api
 
 ### volume ###
-shop/docker/opensearch/data/
+shop/docker/opensearch/node*
 
 ### common ###
 .env
