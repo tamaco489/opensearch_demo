@@ -22,7 +22,8 @@ api-all-request: healthcheck sleep \
 	get-customer \
 	create-customer \
 	delete-customer \
-	get-product-comments-by-product-id
+	get-product-comments \
+	get-product-my-comments-by-id
 
 # 生存確認API
 .PHONY: healthcheck
@@ -69,9 +70,14 @@ get-product-by-id:
 		-H 'accept: application/json' | jq .
 
 # コメント系API
-get-product-comments-by-product-id:
+get-product-comments:
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/10001001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
+		-H 'accept: application/json' | jq .
+
+get-product-my-comments-by-id:
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
 
 # 外部決済サービス向け顧客情報系API
