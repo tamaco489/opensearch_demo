@@ -400,6 +400,77 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/products/{productID}/comments/{commentID}/like:
+    post:
+      tags:
+        - v1
+        - products/comments
+      summary: いいねをする
+      description: コメントに対して「いいね」をします。
+      operationId: createLikeProductComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '204':
+          description: いいねの操作に成功しました。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - v1
+        - products/comments
+      summary: いいねを取り消す
+      description: コメントに対する「いいね」を取り消します。
+      operationId: deleteLikeProductComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '204':
+          description: いいねの取り消しに成功しました。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/payment/customers/{userID}:
     get:
       tags:

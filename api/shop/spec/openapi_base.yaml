@@ -62,6 +62,10 @@ paths:
   /v1/products/{productID}/users/comments/{commentID}:
     $ref: './api/v1/products/users/paths/MyCommentByID.yaml'
 
+  # いいね系API
+  /v1/products/{productID}/comments/{commentID}/like:
+    $ref: './api/v1/products/paths/LikeByCommentID.yaml'
+
   # 外部決済サービス向け顧客情報系API
   /v1/payment/customers/{userID}:
     $ref: './api/v1/payments/paths/CustomerByUserID.yaml'

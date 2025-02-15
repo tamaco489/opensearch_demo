@@ -57,6 +57,12 @@ type ServerInterface interface {
 	// Create product comment
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(c *gin.Context, productID uint64)
+	// いいねを取り消す
+	// (DELETE /v1/products/{productID}/comments/{commentID}/like)
+	DeleteLikeProductComment(c *gin.Context, productID uint64, commentID uint64)
+	// いいねをする
+	// (POST /v1/products/{productID}/comments/{commentID}/like)
+	CreateLikeProductComment(c *gin.Context, productID uint64, commentID uint64)
 	// Delete product comment
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(c *gin.Context, productID uint64, commentID uint64)
@@ -402,6 +408,76 @@ func (siw *ServerInterfaceWrapper) CreateProductComment(c *gin.Context) {
 	siw.Handler.CreateProductComment(c, productID)
 }
 
+// DeleteLikeProductComment operation middleware
+func (siw *ServerInterfaceWrapper) DeleteLikeProductComment(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.DeleteLikeProductComment(c, productID, commentID)
+}
+
+// CreateLikeProductComment operation middleware
+func (siw *ServerInterfaceWrapper) CreateLikeProductComment(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.CreateLikeProductComment(c, productID, commentID)
+}
+
 // DeleteProductMyComment operation middleware
 func (siw *ServerInterfaceWrapper) DeleteProductMyComment(c *gin.Context) {
 
@@ -608,6 +684,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.GET(options.BaseURL+"/v1/products/:productID", wrapper.GetProductByID)
 	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductComments)
 	router.POST(options.BaseURL+"/v1/products/:productID/comments", wrapper.CreateProductComment)
+	router.DELETE(options.BaseURL+"/v1/products/:productID/comments/:commentID/like", wrapper.DeleteLikeProductComment)
+	router.POST(options.BaseURL+"/v1/products/:productID/comments/:commentID/like", wrapper.CreateLikeProductComment)
 	router.DELETE(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.DeleteProductMyComment)
 	router.GET(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.GetProductMyComment)
 	router.PUT(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.UpdateProductMyComment)
@@ -1146,6 +1224,96 @@ func (response CreateProductComment500Response) VisitCreateProductCommentRespons
 	return nil
 }
 
+type DeleteLikeProductCommentRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	CommentID uint64 `json:"commentID"`
+}
+
+type DeleteLikeProductCommentResponseObject interface {
+	VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error
+}
+
+type DeleteLikeProductComment204Response struct {
+}
+
+func (response DeleteLikeProductComment204Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteLikeProductComment400Response = BadRequestResponse
+
+func (response DeleteLikeProductComment400Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type DeleteLikeProductComment401Response = UnauthorizedResponse
+
+func (response DeleteLikeProductComment401Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type DeleteLikeProductComment404Response = NotFoundResponse
+
+func (response DeleteLikeProductComment404Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteLikeProductComment500Response = InternalServerErrorResponse
+
+func (response DeleteLikeProductComment500Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
+type CreateLikeProductCommentRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	CommentID uint64 `json:"commentID"`
+}
+
+type CreateLikeProductCommentResponseObject interface {
+	VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error
+}
+
+type CreateLikeProductComment204Response struct {
+}
+
+func (response CreateLikeProductComment204Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CreateLikeProductComment400Response = BadRequestResponse
+
+func (response CreateLikeProductComment400Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type CreateLikeProductComment401Response = UnauthorizedResponse
+
+func (response CreateLikeProductComment401Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type CreateLikeProductComment404Response = NotFoundResponse
+
+func (response CreateLikeProductComment404Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type CreateLikeProductComment500Response = InternalServerErrorResponse
+
+func (response CreateLikeProductComment500Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
 type DeleteProductMyCommentRequestObject struct {
 	ProductID uint64 `json:"productID"`
 	CommentID uint64 `json:"commentID"`
@@ -1497,6 +1665,12 @@ type StrictServerInterface interface {
 	// Create product comment
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(ctx *gin.Context, request CreateProductCommentRequestObject) (CreateProductCommentResponseObject, error)
+	// いいねを取り消す
+	// (DELETE /v1/products/{productID}/comments/{commentID}/like)
+	DeleteLikeProductComment(ctx *gin.Context, request DeleteLikeProductCommentRequestObject) (DeleteLikeProductCommentResponseObject, error)
+	// いいねをする
+	// (POST /v1/products/{productID}/comments/{commentID}/like)
+	CreateLikeProductComment(ctx *gin.Context, request CreateLikeProductCommentRequestObject) (CreateLikeProductCommentResponseObject, error)
 	// Delete product comment
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(ctx *gin.Context, request DeleteProductMyCommentRequestObject) (DeleteProductMyCommentResponseObject, error)
@@ -1920,6 +2094,62 @@ func (sh *strictHandler) CreateProductComment(ctx *gin.Context, productID uint64
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(CreateProductCommentResponseObject); ok {
 		if err := validResponse.VisitCreateProductCommentResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteLikeProductComment operation middleware
+func (sh *strictHandler) DeleteLikeProductComment(ctx *gin.Context, productID uint64, commentID uint64) {
+	var request DeleteLikeProductCommentRequestObject
+
+	request.ProductID = productID
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteLikeProductComment(ctx, request.(DeleteLikeProductCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteLikeProductComment")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(DeleteLikeProductCommentResponseObject); ok {
+		if err := validResponse.VisitDeleteLikeProductCommentResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateLikeProductComment operation middleware
+func (sh *strictHandler) CreateLikeProductComment(ctx *gin.Context, productID uint64, commentID uint64) {
+	var request CreateLikeProductCommentRequestObject
+
+	request.ProductID = productID
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateLikeProductComment(ctx, request.(CreateLikeProductCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateLikeProductComment")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(CreateLikeProductCommentResponseObject); ok {
+		if err := validResponse.VisitCreateLikeProductCommentResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
