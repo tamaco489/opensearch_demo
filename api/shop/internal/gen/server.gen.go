@@ -54,6 +54,9 @@ type ServerInterface interface {
 	// Get list of product comments by product id
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(c *gin.Context, productID uint64, params GetProductCommentsParams)
+	// Create product comment
+	// (POST /v1/products/{productID}/comments)
+	CreateProductComment(c *gin.Context, productID uint64)
 	// Get product my comment details
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyCommentByID(c *gin.Context, productID uint64, commentID uint64)
@@ -367,6 +370,32 @@ func (siw *ServerInterfaceWrapper) GetProductComments(c *gin.Context) {
 	siw.Handler.GetProductComments(c, productID, params)
 }
 
+// CreateProductComment operation middleware
+func (siw *ServerInterfaceWrapper) CreateProductComment(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.CreateProductComment(c, productID)
+}
+
 // GetProductMyCommentByID operation middleware
 func (siw *ServerInterfaceWrapper) GetProductMyCommentByID(c *gin.Context) {
 
@@ -502,6 +531,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.GET(options.BaseURL+"/v1/products", wrapper.GetProducts)
 	router.GET(options.BaseURL+"/v1/products/:productID", wrapper.GetProductByID)
 	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductComments)
+	router.POST(options.BaseURL+"/v1/products/:productID/comments", wrapper.CreateProductComment)
 	router.GET(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.GetProductMyCommentByID)
 	router.POST(options.BaseURL+"/v1/users", wrapper.CreateUser)
 	router.GET(options.BaseURL+"/v1/users/me", wrapper.GetMe)
@@ -985,6 +1015,59 @@ func (response GetProductComments200JSONResponse) VisitGetProductCommentsRespons
 	return json.NewEncoder(w).Encode(response)
 }
 
+type CreateProductCommentRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	Body      *CreateProductCommentJSONRequestBody
+}
+
+type CreateProductCommentResponseObject interface {
+	VisitCreateProductCommentResponse(w http.ResponseWriter) error
+}
+
+type CreateProductComment201JSONResponse CreateProductCommentResponse
+
+func (response CreateProductComment201JSONResponse) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(201)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type CreateProductComment400Response = BadRequestResponse
+
+func (response CreateProductComment400Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type CreateProductComment401Response = UnauthorizedResponse
+
+func (response CreateProductComment401Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type CreateProductComment403Response = ForbiddenResponse
+
+func (response CreateProductComment403Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(403)
+	return nil
+}
+
+type CreateProductComment409Response = AlreadyExistsResponse
+
+func (response CreateProductComment409Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(409)
+	return nil
+}
+
+type CreateProductComment500Response = InternalServerErrorResponse
+
+func (response CreateProductComment500Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
 type GetProductMyCommentByIDRequestObject struct {
 	ProductID uint64 `json:"productID"`
 	CommentID uint64 `json:"commentID"`
@@ -1242,6 +1325,9 @@ type StrictServerInterface interface {
 	// Get list of product comments by product id
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(ctx *gin.Context, request GetProductCommentsRequestObject) (GetProductCommentsResponseObject, error)
+	// Create product comment
+	// (POST /v1/products/{productID}/comments)
+	CreateProductComment(ctx *gin.Context, request CreateProductCommentRequestObject) (CreateProductCommentResponseObject, error)
 	// Get product my comment details
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyCommentByID(ctx *gin.Context, request GetProductMyCommentByIDRequestObject) (GetProductMyCommentByIDResponseObject, error)
@@ -1624,6 +1710,41 @@ func (sh *strictHandler) GetProductComments(ctx *gin.Context, productID uint64, 
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetProductCommentsResponseObject); ok {
 		if err := validResponse.VisitGetProductCommentsResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateProductComment operation middleware
+func (sh *strictHandler) CreateProductComment(ctx *gin.Context, productID uint64) {
+	var request CreateProductCommentRequestObject
+
+	request.ProductID = productID
+
+	var body CreateProductCommentJSONRequestBody
+	if err := ctx.ShouldBind(&body); err != nil {
+		ctx.Status(http.StatusBadRequest)
+		ctx.Error(err)
+		return
+	}
+	request.Body = &body
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateProductComment(ctx, request.(CreateProductCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateProductComment")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(CreateProductCommentResponseObject); ok {
+		if err := validResponse.VisitCreateProductCommentResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

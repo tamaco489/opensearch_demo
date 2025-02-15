@@ -155,6 +155,24 @@ type CreateCustomerResponse struct {
 	Id string `json:"id"`
 }
 
+// CreateProductCommentRequest defines model for CreateProductCommentRequest.
+type CreateProductCommentRequest struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+}
+
+// CreateProductCommentResponse defines model for CreateProductCommentResponse.
+type CreateProductCommentResponse struct {
+	// Id 投稿したコメントID
+	Id uint64 `json:"id"`
+}
+
 // CreateUserResponse ユーザ新規登録APIのレスポンス
 type CreateUserResponse struct {
 	// UserId user_idを返却します。
@@ -411,6 +429,9 @@ type CreateChargeJSONRequestBody = CreateChargeRequest
 
 // CreateReservationJSONRequestBody defines body for CreateReservation for application/json ContentType.
 type CreateReservationJSONRequestBody = ReservationRequest
+
+// CreateProductCommentJSONRequestBody defines body for CreateProductComment for application/json ContentType.
+type CreateProductCommentJSONRequestBody = CreateProductCommentRequest
 
 // CreateProfileJSONRequestBody defines body for CreateProfile for application/json ContentType.
 type CreateProfileJSONRequestBody = Profile
