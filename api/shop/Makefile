@@ -41,7 +41,7 @@ run: build
 # =================================================================
 # for Container
 # =================================================================
-.PHONY: up down logs api-log
+.PHONY: up down logs
 up:
 	docker compose up -d shop-api opensearch opensearch-dashboards
 
