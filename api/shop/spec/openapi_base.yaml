@@ -58,7 +58,9 @@ paths:
 
   # コメント系API
   /v1/products/{productID}/comments:
-    $ref: './api/v1/products/paths/CommentsByProductID.yaml'
+    $ref: './api/v1/products/paths/Comments.yaml'
+  /v1/products/{productID}/users/comments/{commentID}:
+    $ref: './api/v1/products/users/paths/GetMyCommentByID.yaml'
 
   # 外部決済サービス向け顧客情報系API
   /v1/payment/customers/{userID}:

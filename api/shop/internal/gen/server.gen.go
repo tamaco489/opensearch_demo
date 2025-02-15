@@ -53,7 +53,10 @@ type ServerInterface interface {
 	GetProductByID(c *gin.Context, productID int64)
 	// Get list of product comments by product id
 	// (GET /v1/products/{productID}/comments)
-	GetProductCommentsByProductID(c *gin.Context, productID uint64, params GetProductCommentsByProductIDParams)
+	GetProductComments(c *gin.Context, productID uint64, params GetProductCommentsParams)
+	// Get product my comment details
+	// (GET /v1/products/{productID}/users/comments/{commentID})
+	GetProductMyCommentByID(c *gin.Context, productID uint64, commentID uint64)
 	// Create new user
 	// (POST /v1/users)
 	CreateUser(c *gin.Context)
@@ -319,8 +322,8 @@ func (siw *ServerInterfaceWrapper) GetProductByID(c *gin.Context) {
 	siw.Handler.GetProductByID(c, productID)
 }
 
-// GetProductCommentsByProductID operation middleware
-func (siw *ServerInterfaceWrapper) GetProductCommentsByProductID(c *gin.Context) {
+// GetProductComments operation middleware
+func (siw *ServerInterfaceWrapper) GetProductComments(c *gin.Context) {
 
 	var err error
 
@@ -336,7 +339,7 @@ func (siw *ServerInterfaceWrapper) GetProductCommentsByProductID(c *gin.Context)
 	c.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params GetProductCommentsByProductIDParams
+	var params GetProductCommentsParams
 
 	// ------------- Optional query parameter "cursor" -------------
 
@@ -361,7 +364,42 @@ func (siw *ServerInterfaceWrapper) GetProductCommentsByProductID(c *gin.Context)
 		}
 	}
 
-	siw.Handler.GetProductCommentsByProductID(c, productID, params)
+	siw.Handler.GetProductComments(c, productID, params)
+}
+
+// GetProductMyCommentByID operation middleware
+func (siw *ServerInterfaceWrapper) GetProductMyCommentByID(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetProductMyCommentByID(c, productID, commentID)
 }
 
 // CreateUser operation middleware
@@ -463,7 +501,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/v1/payments/reservations", wrapper.CreateReservation)
 	router.GET(options.BaseURL+"/v1/products", wrapper.GetProducts)
 	router.GET(options.BaseURL+"/v1/products/:productID", wrapper.GetProductByID)
-	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductCommentsByProductID)
+	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductComments)
+	router.GET(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.GetProductMyCommentByID)
 	router.POST(options.BaseURL+"/v1/users", wrapper.CreateUser)
 	router.GET(options.BaseURL+"/v1/users/me", wrapper.GetMe)
 	router.POST(options.BaseURL+"/v1/users/profiles", wrapper.CreateProfile)
@@ -928,22 +967,68 @@ func (response GetProductByID500Response) VisitGetProductByIDResponse(w http.Res
 	return nil
 }
 
-type GetProductCommentsByProductIDRequestObject struct {
+type GetProductCommentsRequestObject struct {
 	ProductID uint64 `json:"productID"`
-	Params    GetProductCommentsByProductIDParams
+	Params    GetProductCommentsParams
 }
 
-type GetProductCommentsByProductIDResponseObject interface {
-	VisitGetProductCommentsByProductIDResponse(w http.ResponseWriter) error
+type GetProductCommentsResponseObject interface {
+	VisitGetProductCommentsResponse(w http.ResponseWriter) error
 }
 
-type GetProductCommentsByProductID200JSONResponse CommentsByProductID
+type GetProductComments200JSONResponse Comments
 
-func (response GetProductCommentsByProductID200JSONResponse) VisitGetProductCommentsByProductIDResponse(w http.ResponseWriter) error {
+func (response GetProductComments200JSONResponse) VisitGetProductCommentsResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProductMyCommentByIDRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	CommentID uint64 `json:"commentID"`
+}
+
+type GetProductMyCommentByIDResponseObject interface {
+	VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error
+}
+
+type GetProductMyCommentByID200JSONResponse GetMyCommentByID
+
+func (response GetProductMyCommentByID200JSONResponse) VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProductMyCommentByID400Response = BadRequestResponse
+
+func (response GetProductMyCommentByID400Response) VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type GetProductMyCommentByID401Response = UnauthorizedResponse
+
+func (response GetProductMyCommentByID401Response) VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type GetProductMyCommentByID404Response = NotFoundResponse
+
+func (response GetProductMyCommentByID404Response) VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetProductMyCommentByID500Response = InternalServerErrorResponse
+
+func (response GetProductMyCommentByID500Response) VisitGetProductMyCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
 }
 
 type CreateUserRequestObject struct {
@@ -1156,7 +1241,10 @@ type StrictServerInterface interface {
 	GetProductByID(ctx *gin.Context, request GetProductByIDRequestObject) (GetProductByIDResponseObject, error)
 	// Get list of product comments by product id
 	// (GET /v1/products/{productID}/comments)
-	GetProductCommentsByProductID(ctx *gin.Context, request GetProductCommentsByProductIDRequestObject) (GetProductCommentsByProductIDResponseObject, error)
+	GetProductComments(ctx *gin.Context, request GetProductCommentsRequestObject) (GetProductCommentsResponseObject, error)
+	// Get product my comment details
+	// (GET /v1/products/{productID}/users/comments/{commentID})
+	GetProductMyCommentByID(ctx *gin.Context, request GetProductMyCommentByIDRequestObject) (GetProductMyCommentByIDResponseObject, error)
 	// Create new user
 	// (POST /v1/users)
 	CreateUser(ctx *gin.Context, request CreateUserRequestObject) (CreateUserResponseObject, error)
@@ -1515,18 +1603,18 @@ func (sh *strictHandler) GetProductByID(ctx *gin.Context, productID int64) {
 	}
 }
 
-// GetProductCommentsByProductID operation middleware
-func (sh *strictHandler) GetProductCommentsByProductID(ctx *gin.Context, productID uint64, params GetProductCommentsByProductIDParams) {
-	var request GetProductCommentsByProductIDRequestObject
+// GetProductComments operation middleware
+func (sh *strictHandler) GetProductComments(ctx *gin.Context, productID uint64, params GetProductCommentsParams) {
+	var request GetProductCommentsRequestObject
 
 	request.ProductID = productID
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.GetProductCommentsByProductID(ctx, request.(GetProductCommentsByProductIDRequestObject))
+		return sh.ssi.GetProductComments(ctx, request.(GetProductCommentsRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "GetProductCommentsByProductID")
+		handler = middleware(handler, "GetProductComments")
 	}
 
 	response, err := handler(ctx, request)
@@ -1534,8 +1622,36 @@ func (sh *strictHandler) GetProductCommentsByProductID(ctx *gin.Context, product
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(GetProductCommentsByProductIDResponseObject); ok {
-		if err := validResponse.VisitGetProductCommentsByProductIDResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(GetProductCommentsResponseObject); ok {
+		if err := validResponse.VisitGetProductCommentsResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetProductMyCommentByID operation middleware
+func (sh *strictHandler) GetProductMyCommentByID(ctx *gin.Context, productID uint64, commentID uint64) {
+	var request GetProductMyCommentByIDRequestObject
+
+	request.ProductID = productID
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProductMyCommentByID(ctx, request.(GetProductMyCommentByIDRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProductMyCommentByID")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetProductMyCommentByIDResponseObject); ok {
+		if err := validResponse.VisitGetProductMyCommentByIDResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

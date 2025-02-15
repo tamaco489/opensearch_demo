@@ -93,8 +93,8 @@ type CommentByUser struct {
 	UserName string `json:"user_name"`
 }
 
-// CommentsByProductID defines model for CommentsByProductID.
-type CommentsByProductID struct {
+// Comments defines model for Comments.
+type Comments struct {
 	// Comments 商品に対するコメント一覧
 	Comments []GetProductComments         `json:"comments"`
 	Metadata GetProductCommentsNextCursor `json:"metadata"`
@@ -192,6 +192,30 @@ type CreditCardList struct {
 
 	// MaskedCardNumber マスキングされたカード番号（***** + 下3桁）
 	MaskedCardNumber string `json:"masked_card_number"`
+}
+
+// GetMyCommentByID defines model for GetMyCommentByID.
+type GetMyCommentByID struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// CreatedAt コメントの投稿日時（ISO 8601形式, JST）
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id コメントの一意なID
+	Id uint64 `json:"id"`
+
+	// LikeCount いいねの数
+	LikeCount uint64 `json:"like_count"`
+
+	// Rate 評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
 }
 
 // HealthCheck HealthCheckのレスポンス
@@ -368,8 +392,8 @@ type GetProductsParams struct {
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetProductCommentsByProductIDParams defines parameters for GetProductCommentsByProductID.
-type GetProductCommentsByProductIDParams struct {
+// GetProductCommentsParams defines parameters for GetProductComments.
+type GetProductCommentsParams struct {
 	// Cursor 次のページの商品コメント一覧を取得するためのカーソル。
 	// カーソルはコメントIDをbase64でエンコードした文字列を指定する。
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`

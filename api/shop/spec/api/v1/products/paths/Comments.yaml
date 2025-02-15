@@ -4,7 +4,7 @@ get:
     - products/comments
   summary: Get list of product comments by product id
   description: 商品に対してのコメント一覧を取得します。
-  operationId: getProductCommentsByProductID
+  operationId: getProductComments
   parameters:
     - name: productID
       in: path
@@ -43,4 +43,4 @@ get:
       content:
         application/json:
           schema:
-            $ref: '../schemas/CommentsByProductID.yaml'
+            $ref: '../schemas/Comments.yaml'
