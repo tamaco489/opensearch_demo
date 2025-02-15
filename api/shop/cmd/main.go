@@ -10,12 +10,13 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tamaco489/elasticsearch_demo/api/shop/controller"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/controller"
 )
 
 func main() {
 	ctx := context.Background()
 
+	//
 	server, err := controller.NewHShopAPIServer()
 	if err != nil {
 		panic(err)
