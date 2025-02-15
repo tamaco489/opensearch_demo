@@ -13,14 +13,12 @@ import (
 func NewHShopAPIServer() (*http.Server, error) {
 
 	// CORSの設定
-	cnf := cors.DefaultConfig()
-	cnf.AllowOrigins = []string{"*"}
-	cnf.AllowHeaders = append(cnf.AllowHeaders, "Authorization", "Access-Control-Allow-Origin")
+	corsCnf := NewCorsConfig()
 
 	// Ginエンジンを初期化し、カスタムログの設定、CORSの設定を追加する
 	r := gin.New()
 	r.Use(gin.LoggerWithFormatter(logger.LogFormatter))
-	r.Use(cors.New(cnf))
+	r.Use(cors.New(corsCnf))
 
 	// リクエスト処理中にpanicが発生した場合、それをキャッチしてサーバがcrashすることを防ぐ。
 	//
@@ -53,4 +51,52 @@ func NewHShopAPIServer() (*http.Server, error) {
 	}
 
 	return server, nil
+}
+
+// NewCorsConfig は CORS の設定を定義し、アプリケーションのリクエスト制御を行います。
+//
+// - AllowOrigins: すべてのオリジンを許可（一旦 "*" に設定）
+//
+// - AllowMethods: 許可する HTTP メソッドを指定
+//
+// - AllowHeaders: 許可するリクエストヘッダーを指定
+//
+// - ExposeHeaders: クライアント側でアクセス可能なレスポンスヘッダー
+//
+// - AllowCredentials: 認証情報の送信を許可（false に設定）
+//
+// - MaxAge: プリフライトリクエストのキャッシュ時間（秒）
+func NewCorsConfig() cors.Config {
+	return cors.Config{
+		// 許可するオリジンを指定（一旦全許可）
+		AllowOrigins: []string{"*"},
+
+		// 必要なメソッドのみ許可
+		AllowMethods: []string{
+			"GET",
+			"POST",
+			"PUT",
+			"DELETE",
+			"HEAD",
+			"OPTIONS",
+		},
+
+		// 許可するヘッダーを限定
+		AllowHeaders: []string{
+			"Origin",
+			"Content-Length",
+			"Content-Type",
+			"Authorization",
+			"Access-Control-Allow-Origin",
+		},
+
+		// クライアントがアクセスできるレスポンスヘッダー
+		ExposeHeaders: []string{"Content-Length"},
+
+		// 認証情報を送信可能にする
+		AllowCredentials: false,
+
+		// プリフライトリクエストのキャッシュ時間（秒）
+		MaxAge: 86400,
+	}
 }
