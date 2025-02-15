@@ -43,10 +43,10 @@ run: build
 # =================================================================
 .PHONY: up down logs
 up:
-	docker compose up -d shop-api
+	docker compose up -d shop-api opensearch opensearch-dashboards
 
 down:
-	docker compose down shop-api
+	docker compose down shop-api opensearch opensearch-dashboards
 
 logs:
 	docker compose logs -f shop-api
