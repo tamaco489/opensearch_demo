@@ -10,15 +10,15 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - opensearch-net
+      - sandbox
 
-  opensearch-node1:
-    image: opensearchproject/opensearch:latest
-    container_name: opensearch-node1
+  opensearch:
+    image: opensearchproject/opensearch:2.19.0
+    container_name: opensearch
     environment:
       - cluster.name=opensearch-cluster # Name the cluster
-      - node.name=opensearch-node1 # Name the node that will run in this container
-      - discovery.seed_hosts=opensearch-node1 # Only the current node is needed for discovery
+      - node.name=opensearch # Name the node that will run in this container
+      - discovery.seed_hosts=opensearch # Only the current node is needed for discovery
       - discovery.type=single-node # シングルノードモードに設定
       - bootstrap.memory_lock=true # Disable JVM heap memory swapping
       - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m" # Set min and max JVM heap sizes to at least 50% of system RAM
@@ -37,20 +37,20 @@ services:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
     networks:
-      - opensearch-net
+      - sandbox
 
   opensearch-dashboards:
-    image: opensearchproject/opensearch-dashboards:latest
+    image: opensearchproject/opensearch-dashboards:2.19.0
     container_name: opensearch-dashboards
     ports:
       - 5601:5601 # Map host port 5601 to container port 5601
     expose:
       - "5601" # Expose port 5601 for web access to OpenSearch Dashboards
     environment:
-      - 'OPENSEARCH_HOSTS=["http://opensearch-node1:9200"]' # Only opensearch-node1 is available
+      - 'OPENSEARCH_HOSTS=["http://opensearch:9200"]' # Only opensearch is available
       - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true" # Disables security dashboards plugin in OpenSearch Dashboards
     networks:
-      - opensearch-net
+      - sandbox
 
 networks:
-  opensearch-net:
+  sandbox:
