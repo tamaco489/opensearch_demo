@@ -2,7 +2,7 @@ post:
   tags:
     - v1
     - payments/reservations
-  summary: Create new reservation
+  summary: 商品の予約API
   description: |
     商品IDと個数を指定して、新しい予約を作成します。
     作成された予約は、後続の注文APIで使用されます。

@@ -2,7 +2,7 @@ post:
   tags:
     - v1
     - payments/charges
-  summary: Create new charge
+  summary: 商品の購入API
   description: |-
     新しい支払い（チャージ）を登録します。
     必要に応じて、支払いに関連するトークンや金額をリクエストボディに含めます。
@@ -15,7 +15,7 @@ post:
           $ref: '../schemas/CreateChargeRequest.yaml'
   responses:
     '204':
-      description: 支払いの作成に成功しました。
+      description: 商品の購入に成功しました。
     '400':
       $ref: '../../../responses/BadRequest.yaml'
     '401':

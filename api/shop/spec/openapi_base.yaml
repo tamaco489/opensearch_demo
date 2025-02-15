@@ -28,7 +28,7 @@ paths:
     get:
       tags:
         - healthcheck
-      summary: Checks the health of API
+      summary: ヘルスチェックAPI
       description: APIが正常に動作しているかを確認します。
       operationId: healthcheck
       responses:

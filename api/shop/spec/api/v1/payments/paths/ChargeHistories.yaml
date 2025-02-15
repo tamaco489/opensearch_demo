@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - payments/charges
-  summary: Get list of charge histories
+  summary: 購入履歴の一覧取得API
   description: 以前の注文（チャージ）の履歴情報を取得します。
   operationId: getChargeHistories
   parameters:
@@ -32,7 +32,7 @@ get:
 
   responses:
     '200':
-      description: 注文履歴の取得に成功しました。
+      description: 購入履歴の一覧取得に成功しました。
       content:
         application/json:
           schema:

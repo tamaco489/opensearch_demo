@@ -2,7 +2,7 @@ post:
   tags:
     - v1
     - users/profiles
-  summary: Create user profile
+  summary: プロフィール情報の新規登録API
   description: ユーザのプロフィール情報を登録します。
   operationId: createProfile
   requestBody:

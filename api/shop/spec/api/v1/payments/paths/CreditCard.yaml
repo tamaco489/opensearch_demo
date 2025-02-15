@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - payments/cards
-  summary: Get credit card list
+  summary: 登録済みクレジットカードの一覧取得API
   description: 登録されたクレジットカード情報一覧を取得します。
   operationId: getCreditCards
   responses:
@@ -23,7 +23,7 @@ post:
   tags:
     - v1
     - payments/cards
-  summary: Create new credit card
+  summary: クレジットカードの新規登録API
   description: |-
     新しいクレジットカードを登録します。
     事前に外部のカード登録APIを実行し、登録後に生成されたカードトークンをバックエンドサーバにリクエストする形式をとる。
@@ -48,7 +48,7 @@ delete:
   tags:
     - v1
     - payments/cards
-  summary: Delete credit card
+  summary: 登録済みクレジットカードの削除API
   description: 登録されたクレジットカードを削除します。
   operationId: deleteCreditCard
   responses:

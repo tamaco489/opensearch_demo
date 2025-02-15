@@ -2,7 +2,7 @@ post:
   tags:
     - v1
     - products/comments
-  summary: いいねをする
+  summary: コメントに対しての「いいね」API
   description: コメントに対して「いいね」をします。
   operationId: createLikeProductComment
   parameters:
@@ -38,7 +38,7 @@ delete:
   tags:
     - v1
     - products/comments
-  summary: いいねを取り消す
+  summary: コメントに対しての「いいね」を取り消すAPI
   description: コメントに対する「いいね」を取り消します。
   operationId: deleteLikeProductComment
   parameters:

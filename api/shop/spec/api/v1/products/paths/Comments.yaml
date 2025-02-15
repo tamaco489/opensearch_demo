@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - products/comments
-  summary: Get list of product comments by product id
+  summary: 商品に関連するコメント一覧の取得API
   description: 商品に対してのコメント一覧を取得します。
   operationId: getProductComments
   parameters:
@@ -49,7 +49,7 @@ post:
   tags:
     - v1
     - products/comments
-  summary: Create product comment
+  summary: 商品に対してのコメント登録API
   description: 商品に対してコメントを投稿します。
   operationId: createProductComment
   parameters:

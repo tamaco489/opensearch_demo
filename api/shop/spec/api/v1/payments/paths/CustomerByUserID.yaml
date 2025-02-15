@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - payments/customer
-  summary: Get payment customer details
+  summary: 外部決済向けサービスのアカウント取得API
   description: 外部決済サービス向け顧客IDを取得します。
   operationId: getCustomerByUserID
   parameters:
