@@ -26,8 +26,13 @@ go.work
 
 # End of https://www.toptal.com/developers/gitignore/api/go
 
+### build ###
+shop_api
+
+### volume ###
+shop/docker/opensearch/data/
+
 ### common ###
 .env
 tmp
 *txt
-shop_api
