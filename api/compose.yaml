@@ -32,7 +32,7 @@ services:
         soft: 65536 # Maximum number of open files for the opensearch user - set to at least 65536
         hard: 65536
     volumes:
-      - ./shop/docker/opensearch/node1/data:/usr/share/opensearch/data # Mount host directory to container
+      - ./shop/docker/opensearch/data:/usr/share/opensearch/data # Mount host directory to container
     ports:
       - 9200:9200 # REST API
       - 9600:9600 # Performance Analyzer
