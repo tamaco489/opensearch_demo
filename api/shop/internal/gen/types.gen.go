@@ -93,8 +93,8 @@ type CommentByUser struct {
 	UserName string `json:"user_name"`
 }
 
-// CommentsByProductID defines model for CommentsByProductID.
-type CommentsByProductID struct {
+// Comments defines model for Comments.
+type Comments struct {
 	// Comments 商品に対するコメント一覧
 	Comments []GetProductComments         `json:"comments"`
 	Metadata GetProductCommentsNextCursor `json:"metadata"`
@@ -368,8 +368,8 @@ type GetProductsParams struct {
 	Limit *int32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
-// GetProductCommentsByProductIDParams defines parameters for GetProductCommentsByProductID.
-type GetProductCommentsByProductIDParams struct {
+// GetProductCommentsParams defines parameters for GetProductComments.
+type GetProductCommentsParams struct {
 	// Cursor 次のページの商品コメント一覧を取得するためのカーソル。
 	// カーソルはコメントIDをbase64でエンコードした文字列を指定する。
 	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`

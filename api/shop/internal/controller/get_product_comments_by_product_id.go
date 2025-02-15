@@ -7,7 +7,7 @@ import (
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 )
 
-func (c *Controllers) GetProductCommentsByProductID(ctx *gin.Context, request gen.GetProductCommentsByProductIDRequestObject) (gen.GetProductCommentsByProductIDResponseObject, error) {
+func (c *Controllers) GetProductComments(ctx *gin.Context, request gen.GetProductCommentsRequestObject) (gen.GetProductCommentsResponseObject, error) {
 
 	// NOTE: 大量の商品データ、及びコメントデータを取得する想定とし、700ms(0.7秒) 遅延させる。
 	time.Sleep(700 * time.Millisecond)
@@ -70,7 +70,7 @@ func (c *Controllers) GetProductCommentsByProductID(ctx *gin.Context, request ge
 		NextCursor: "NTQwMDk1MzY=",
 	}
 
-	response := gen.GetProductCommentsByProductID200JSONResponse{
+	response := gen.GetProductComments200JSONResponse{
 		Comments: comments,
 		Metadata: nextCursor,
 	}
