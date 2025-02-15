@@ -245,6 +245,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Comments'
+    post:
+      tags:
+        - v1
+        - products/comments
+      summary: Create product comment
+      description: 商品に対してコメントを投稿します。
+      operationId: createProductComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateProductCommentRequest'
+      responses:
+        '201':
+          description: コメントの投稿が成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateProductCommentResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/AlreadyExists'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/products/{productID}/users/comments/{commentID}:
     get:
       tags:
@@ -670,6 +709,7 @@ components:
               - stock_quantity
               - vip_only
               - image_url
+              - rate
             properties:
               id:
                 type: integer
@@ -729,6 +769,13 @@ components:
                 type: string
                 description: 商品イメージのURL
                 example: https://example.com/images/10001001/product.jpg
+              rate:
+                type: integer
+                format: uint32
+                description: 商品に対するユーザの評価（1〜5の整数）
+                minimum: 1
+                maximum: 5
+                example: 4
             x-go-type-name: GetProducts
         metadata:
           type: object
@@ -756,6 +803,7 @@ components:
         - stock_quantity
         - vip_only
         - image_url
+        - rate
       properties:
         id:
           type: integer
@@ -815,6 +863,13 @@ components:
           type: string
           description: 商品イメージのURL
           example: https://example.com/images/10001001/product.jpg
+        rate:
+          type: integer
+          format: uint32
+          description: 商品に対するユーザの評価（1〜5の整数）
+          minimum: 1
+          maximum: 5
+          example: 4
     ReportReason:
       type: string
       description: コメントに対する報告理由
@@ -865,7 +920,6 @@ components:
               - content
               - created_at
               - like_count
-              - rate
               - report_reasons
               - user
             properties:
@@ -892,13 +946,6 @@ components:
                 format: uint64
                 description: いいねの数
                 example: 15
-              rate:
-                type: integer
-                format: uint32
-                description: 評価（1〜5の整数）
-                minimum: 1
-                maximum: 5
-                example: 4
               report_reasons:
                 type: array
                 description: コメントに対して報告された理由
@@ -920,6 +967,38 @@ components:
               description: 次ページへのカーソル（コメントIDをBase64にエンコードした値）
               example: NTQwMDk1MzY=
           x-go-type-name: GetProductCommentsNextCursor
+    CreateProductCommentRequest:
+      type: object
+      required:
+        - title
+        - content
+        - rate
+      properties:
+        title:
+          type: string
+          description: コメントのタイトル
+          example: とても良い商品です
+        content:
+          type: string
+          description: コメントの本文
+          example: この商品は非常に良いです。特にデザインが素晴らしい。
+        rate:
+          type: integer
+          format: uint32
+          description: 商品に対する評価（1〜5の整数）
+          minimum: 1
+          maximum: 5
+          example: 4
+    CreateProductCommentResponse:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: integer
+          format: uint64
+          description: 投稿したコメントID
+          example: 70235591
     GetMyCommentByID:
       type: object
       required:
@@ -928,7 +1007,6 @@ components:
         - content
         - created_at
         - like_count
-        - rate
         - report_reasons
       properties:
         id:
@@ -954,13 +1032,6 @@ components:
           format: uint64
           description: いいねの数
           example: 15
-        rate:
-          type: integer
-          format: uint32
-          description: 評価（1〜5の整数）
-          minimum: 1
-          maximum: 5
-          example: 4
         report_reasons:
           type: array
           description: コメントに対して報告された理由

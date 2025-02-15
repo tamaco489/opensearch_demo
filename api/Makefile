@@ -23,7 +23,8 @@ api-all-request: healthcheck sleep \
 	create-customer \
 	delete-customer \
 	get-product-comments \
-	get-product-my-comments-by-id
+	get-product-my-comments-by-id \
+	create-product-comment
 
 # 生存確認API
 .PHONY: healthcheck
@@ -74,6 +75,13 @@ get-product-comments:
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/10001001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
+
+create-product-comment:
+	curl -sX 'POST' \
+		'http://localhost:8080/shop/v1/products/10001001/comments' \
+		-H 'accept: application/json' \
+		-H 'Content-Type: application/json' \
+		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}' | jq .
 
 get-product-my-comments-by-id:
 	curl -sX 'GET' \

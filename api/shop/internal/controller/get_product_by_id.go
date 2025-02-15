@@ -21,5 +21,6 @@ func (c *Controllers) GetProductByID(ctx *gin.Context, request gen.GetProductByI
 		StockQuantity:   50,
 		VipOnly:         false,
 		ImageUrl:        "https://example.com/images/20001001/product.jpg",
+		Rate:            4,
 	}, nil
 }

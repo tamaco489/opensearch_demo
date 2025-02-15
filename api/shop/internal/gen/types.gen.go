@@ -114,9 +114,6 @@ type GetProductComments struct {
 	// LikeCount いいねの数
 	LikeCount uint64 `json:"like_count"`
 
-	// Rate 評価（1〜5の整数）
-	Rate uint32 `json:"rate"`
-
 	// ReportReasons コメントに対して報告された理由
 	ReportReasons []ReportReason `json:"report_reasons"`
 
@@ -153,6 +150,24 @@ type CreateCreditCard struct {
 type CreateCustomerResponse struct {
 	// Id 顧客ID
 	Id string `json:"id"`
+}
+
+// CreateProductCommentRequest defines model for CreateProductCommentRequest.
+type CreateProductCommentRequest struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+}
+
+// CreateProductCommentResponse defines model for CreateProductCommentResponse.
+type CreateProductCommentResponse struct {
+	// Id 投稿したコメントID
+	Id uint64 `json:"id"`
 }
 
 // CreateUserResponse ユーザ新規登録APIのレスポンス
@@ -207,9 +222,6 @@ type GetMyCommentByID struct {
 
 	// LikeCount いいねの数
 	LikeCount uint64 `json:"like_count"`
-
-	// Rate 評価（1〜5の整数）
-	Rate uint32 `json:"rate"`
 
 	// ReportReasons コメントに対して報告された理由
 	ReportReasons []ReportReason `json:"report_reasons"`
@@ -280,6 +292,9 @@ type ProductByID struct {
 	// Price 定価（税込、日本円）
 	Price float32 `json:"price"`
 
+	// Rate 商品に対するユーザの評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
 	// StockQuantity 在庫数
 	StockQuantity int32 `json:"stock_quantity"`
 
@@ -333,6 +348,9 @@ type GetProducts struct {
 
 	// Price 定価（税込、日本円）
 	Price float32 `json:"price"`
+
+	// Rate 商品に対するユーザの評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
 
 	// StockQuantity 在庫数
 	StockQuantity int32 `json:"stock_quantity"`
@@ -411,6 +429,9 @@ type CreateChargeJSONRequestBody = CreateChargeRequest
 
 // CreateReservationJSONRequestBody defines body for CreateReservation for application/json ContentType.
 type CreateReservationJSONRequestBody = ReservationRequest
+
+// CreateProductCommentJSONRequestBody defines body for CreateProductComment for application/json ContentType.
+type CreateProductCommentJSONRequestBody = CreateProductCommentRequest
 
 // CreateProfileJSONRequestBody defines body for CreateProfile for application/json ContentType.
 type CreateProfileJSONRequestBody = Profile

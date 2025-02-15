@@ -44,3 +44,43 @@ get:
         application/json:
           schema:
             $ref: '../schemas/Comments.yaml'
+
+post:
+  tags:
+    - v1
+    - products/comments
+  summary: Create product comment
+  description: 商品に対してコメントを投稿します。
+  operationId: createProductComment
+  parameters:
+    - name: productID
+      in: path
+      description: 商品ID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 10001001
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../schemas/CreateProductCommentRequest.yaml'
+  responses:
+    '201':
+      description: コメントの投稿が成功しました。
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/CreateProductCommentResponse.yaml'
+    '400':
+      $ref: '../../../responses/BadRequest.yaml'
+    '401':
+      $ref: '../../../responses/Unauthorized.yaml'
+    '403':
+      $ref: '../../../responses/Forbidden.yaml'
+    '409':
+      $ref: '../../../responses/AlreadyExists.yaml'
+    '500':
+      $ref: '../../../responses/InternalServerError.yaml'

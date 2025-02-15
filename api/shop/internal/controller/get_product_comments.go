@@ -21,7 +21,6 @@ func (c *Controllers) GetProductComments(ctx *gin.Context, request gen.GetProduc
 			Content:   "この商品は非常に良いです。特にデザインが素晴らしい。",
 			CreatedAt: time.Date(2025, 2, 15, 13, 45, 30, 0, jst),
 			LikeCount: 15,
-			Rate:      4,
 			ReportReasons: []gen.ReportReason{
 				gen.Inappropriate,
 				gen.Irrelevant,
@@ -38,7 +37,6 @@ func (c *Controllers) GetProductComments(ctx *gin.Context, request gen.GetProduc
 			Content:   "商品は思った通りのデザインでとても気に入りました。",
 			CreatedAt: time.Date(2025, 2, 16, 14, 25, 30, 0, jst),
 			LikeCount: 10,
-			Rate:      5,
 			ReportReasons: []gen.ReportReason{
 				gen.Fake,
 			},
@@ -54,7 +52,6 @@ func (c *Controllers) GetProductComments(ctx *gin.Context, request gen.GetProduc
 			Content:   "使用感は良かったが、価格に見合わないかもしれない。",
 			CreatedAt: time.Date(2025, 2, 17, 15, 15, 30, 0, jst),
 			LikeCount: 5,
-			Rate:      3,
 			ReportReasons: []gen.ReportReason{
 				gen.Other,
 			},

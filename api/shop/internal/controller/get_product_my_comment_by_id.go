@@ -17,7 +17,6 @@ func (c *Controllers) GetProductMyCommentByID(ctx *gin.Context, request gen.GetP
 		Content:   "この商品は非常に良いです。特にデザインが素晴らしい。",
 		CreatedAt: time.Date(2025, 2, 15, 13, 45, 30, 0, jst),
 		LikeCount: 15,
-		Rate:      4,
 		ReportReasons: []gen.ReportReason{
 			gen.Inappropriate,
 			gen.Irrelevant,
