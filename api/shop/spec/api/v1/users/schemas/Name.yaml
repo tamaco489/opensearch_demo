@@ -1,0 +1,23 @@
+type: object
+required:
+  - first_name
+  - last_name
+  - first_name_roman
+  - last_name_roman
+properties:
+  first_name:
+    type: string
+    description: ユーザーの名前
+    example: "世一"
+  last_name:
+    type: string
+    description: ユーザーの姓
+    example: "潔"
+  first_name_roman:
+    type: string
+    description: ユーザーの名前 (ローマ字表記)
+    example: "Yoichi"
+  last_name_roman:
+    type: string
+    description: ユーザーの姓 (ローマ字表記)
+    example: "Isagi"

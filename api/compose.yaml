@@ -1,0 +1,11 @@
+services:
+  shop-api:
+    platform: linux/amd64
+    image: cosmtrek/air:v1.61.0
+    container_name: shop-api
+    working_dir: /go/src/github.com/tamaco489/elasticsearch_demo/api/shop
+    volumes:
+      - ./shop:/go/src/github.com/tamaco489/elasticsearch_demo/api/shop
+      - ~/.cache/go-build:/root/.cache/go-build
+    ports:
+      - "8080:8080"
