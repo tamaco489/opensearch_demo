@@ -1,8 +1,8 @@
 openapi: 3.0.0
 info:
-  title: K6 Load Test API
+  title: opensearch demo API
   description: |-
-    K6 Load Test API
+    opensearch demo API
   version: 1.0.0
 servers:
   - url: 'http://localhost:{port}/shop/'
