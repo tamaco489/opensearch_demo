@@ -41,15 +41,21 @@ run: build
 # =================================================================
 # for Container
 # =================================================================
-.PHONY: up down logs
+.PHONY: up down logs api-log ops-log
 up:
-	docker compose up -d shop-api
+	docker compose up -d shop-api opensearch opensearch-dashboards
 
 down:
-	docker compose down shop-api
+	docker compose down shop-api opensearch opensearch-dashboards
 
 logs:
+	docker compose logs -f shop-api opensearch
+
+api-log:
 	docker compose logs -f shop-api
+
+ops-log:
+	docker compose logs -f opensearch
 
 
 # =================================================================
