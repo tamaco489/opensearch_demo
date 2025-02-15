@@ -194,6 +194,30 @@ type CreditCardList struct {
 	MaskedCardNumber string `json:"masked_card_number"`
 }
 
+// GetMyCommentByID defines model for GetMyCommentByID.
+type GetMyCommentByID struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// CreatedAt コメントの投稿日時（ISO 8601形式, JST）
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id コメントの一意なID
+	Id uint64 `json:"id"`
+
+	// LikeCount いいねの数
+	LikeCount uint64 `json:"like_count"`
+
+	// Rate 評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+}
+
 // HealthCheck HealthCheckのレスポンス
 type HealthCheck struct {
 	// Message メッセージ。通常はok
