@@ -26,7 +26,9 @@ api-all-request: healthcheck sleep \
 	create-product-comment \
 	get-product-my-comment \
 	update-product-my-comment \
-	delete-product-my-comment
+	delete-product-my-comment \
+	create-like-product-comment \
+	delete-like-product-comment
 
 # 生存確認API
 .PHONY: healthcheck
@@ -102,6 +104,19 @@ delete-product-my-comment:
 	curl -i -X 'DELETE' \
 		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
 		-H 'accept: */*'
+
+# いいね系API
+create-like-product-comment:
+	curl -i -X 'POST' \
+		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		-H 'accept: */*' \
+		-d ''
+
+delete-like-product-comment:
+	curl -i -X 'DELETE' \
+		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		-H 'accept: */*' \
+		-d ''
 
 # 外部決済サービス向け顧客情報系API
 .PHONY: get-customer create-customer delete-customer

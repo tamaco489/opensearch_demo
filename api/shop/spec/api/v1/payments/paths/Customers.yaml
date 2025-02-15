@@ -2,7 +2,7 @@ post:
   tags:
     - v1
     - payments/customer
-  summary: Create new payment customer
+  summary: 外部決済向けサービスのアカウント登録API
   description: 外部決済サービスにアカウント登録を行います。
   operationId: createCustomer
   responses:
@@ -25,7 +25,7 @@ delete:
   tags:
     - v1
     - payments/customer
-  summary: Delete payment customer
+  summary: 外部決済向けサービスのアカウント削除API
   description: 外部決済サービスにアカウント削除を行います。
   operationId: deleteCustomer
   responses:

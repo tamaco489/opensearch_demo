@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - products/users/comments
-  summary: Get product my comment details
+  summary: 自身のコメント情報取得API
   description: 指定した商品情報に対する自身のコメント情報を取得する
   operationId: getProductMyComment
   parameters:
@@ -42,7 +42,7 @@ put:
   tags:
     - v1
     - products/users/comments
-  summary: Create or update product comment
+  summary: 自身のコメント情報更新API
   description: 指定した商品情報に対するコメントを更新する
   operationId: updateProductMyComment
   parameters:
@@ -84,7 +84,7 @@ delete:
   tags:
     - v1
     - products/users/comments
-  summary: Delete product comment
+  summary: 自身のコメント情報削除API
   description: 指定した商品情報に対するコメントを削除する
   operationId: deleteProductMyComment
   parameters:

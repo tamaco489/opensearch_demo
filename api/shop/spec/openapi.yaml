@@ -18,7 +18,7 @@ paths:
     get:
       tags:
         - healthcheck
-      summary: Checks the health of API
+      summary: ヘルスチェックAPI
       description: APIが正常に動作しているかを確認します。
       operationId: healthcheck
       responses:
@@ -34,8 +34,8 @@ paths:
       tags:
         - v1
         - users
-      summary: Create new user
-      description: ユーザを新規作成します。
+      summary: ユーザの新規登録API
+      description: ユーザを新規登録します。
       operationId: createUser
       responses:
         '201':
@@ -57,7 +57,7 @@ paths:
       tags:
         - v1
         - users
-      summary: Get user information about myself
+      summary: 自身のユーザ情報取得API
       description: 自身のユーザー情報を取得する
       operationId: getMe
       responses:
@@ -78,7 +78,7 @@ paths:
       tags:
         - v1
         - users/profiles
-      summary: Create user profile
+      summary: プロフィール情報の新規登録API
       description: ユーザのプロフィール情報を登録します。
       operationId: createProfile
       requestBody:
@@ -109,7 +109,7 @@ paths:
       tags:
         - v1
         - users/profiles
-      summary: Get profile information about myself
+      summary: 自身のプロフィール情報取得API
       description: 自身のプロフィール情報を取得する
       operationId: getProfileMe
       responses:
@@ -130,7 +130,7 @@ paths:
       tags:
         - v1
         - products
-      summary: Get list of products
+      summary: 商品の一覧情報取得API
       description: 商品情報一覧を取得します。
       operationId: getProducts
       parameters:
@@ -169,7 +169,7 @@ paths:
       tags:
         - v1
         - products
-      summary: Get product details
+      summary: 商品の詳細情報取得API
       description: 商品IDに合致する商品情報の詳細を取得する
       operationId: getProductByID
       parameters:
@@ -203,7 +203,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: Get list of product comments by product id
+      summary: 商品に関連するコメント一覧の取得API
       description: 商品に対してのコメント一覧を取得します。
       operationId: getProductComments
       parameters:
@@ -249,7 +249,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: Create product comment
+      summary: 商品に対してのコメント登録API
       description: 商品に対してコメントを投稿します。
       operationId: createProductComment
       parameters:
@@ -289,7 +289,7 @@ paths:
       tags:
         - v1
         - products/users/comments
-      summary: Get product my comment details
+      summary: 自身のコメント情報取得API
       description: 指定した商品情報に対する自身のコメント情報を取得する
       operationId: getProductMyComment
       parameters:
@@ -328,7 +328,7 @@ paths:
       tags:
         - v1
         - products/users/comments
-      summary: Create or update product comment
+      summary: 自身のコメント情報更新API
       description: 指定した商品情報に対するコメントを更新する
       operationId: updateProductMyComment
       parameters:
@@ -369,7 +369,7 @@ paths:
       tags:
         - v1
         - products/users/comments
-      summary: Delete product comment
+      summary: 自身のコメント情報削除API
       description: 指定した商品情報に対するコメントを削除する
       operationId: deleteProductMyComment
       parameters:
@@ -400,12 +400,83 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/products/{productID}/comments/{commentID}/like:
+    post:
+      tags:
+        - v1
+        - products/comments
+      summary: コメントに対しての「いいね」API
+      description: コメントに対して「いいね」をします。
+      operationId: createLikeProductComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '204':
+          description: いいねの操作に成功しました。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - v1
+        - products/comments
+      summary: コメントに対しての「いいね」を取り消すAPI
+      description: コメントに対する「いいね」を取り消します。
+      operationId: deleteLikeProductComment
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '204':
+          description: いいねの取り消しに成功しました。
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/payment/customers/{userID}:
     get:
       tags:
         - v1
         - payments/customer
-      summary: Get payment customer details
+      summary: 外部決済向けサービスのアカウント取得API
       description: 外部決済サービス向け顧客IDを取得します。
       operationId: getCustomerByUserID
       parameters:
@@ -438,7 +509,7 @@ paths:
       tags:
         - v1
         - payments/customer
-      summary: Create new payment customer
+      summary: 外部決済向けサービスのアカウント登録API
       description: 外部決済サービスにアカウント登録を行います。
       operationId: createCustomer
       responses:
@@ -460,7 +531,7 @@ paths:
       tags:
         - v1
         - payments/customer
-      summary: Delete payment customer
+      summary: 外部決済向けサービスのアカウント削除API
       description: 外部決済サービスにアカウント削除を行います。
       operationId: deleteCustomer
       responses:
@@ -479,7 +550,7 @@ paths:
       tags:
         - v1
         - payments/cards
-      summary: Get credit card list
+      summary: 登録済みクレジットカードの一覧取得API
       description: 登録されたクレジットカード情報一覧を取得します。
       operationId: getCreditCards
       responses:
@@ -499,7 +570,7 @@ paths:
       tags:
         - v1
         - payments/cards
-      summary: Create new credit card
+      summary: クレジットカードの新規登録API
       description: |-
         新しいクレジットカードを登録します。
         事前に外部のカード登録APIを実行し、登録後に生成されたカードトークンをバックエンドサーバにリクエストする形式をとる。
@@ -523,7 +594,7 @@ paths:
       tags:
         - v1
         - payments/cards
-      summary: Delete credit card
+      summary: 登録済みクレジットカードの削除API
       description: 登録されたクレジットカードを削除します。
       operationId: deleteCreditCard
       responses:
@@ -542,7 +613,7 @@ paths:
       tags:
         - v1
         - payments/reservations
-      summary: Create new reservation
+      summary: 商品の予約API
       description: |
         商品IDと個数を指定して、新しい予約を作成します。
         作成された予約は、後続の注文APIで使用されます。
@@ -571,7 +642,7 @@ paths:
       tags:
         - v1
         - payments/charges
-      summary: Create new charge
+      summary: 商品の購入API
       description: |-
         新しい支払い（チャージ）を登録します。
         必要に応じて、支払いに関連するトークンや金額をリクエストボディに含めます。
@@ -584,7 +655,7 @@ paths:
               $ref: '#/components/schemas/CreateChargeRequest'
       responses:
         '204':
-          description: 支払いの作成に成功しました。
+          description: 商品の購入に成功しました。
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -596,7 +667,7 @@ paths:
       tags:
         - v1
         - payments/charges
-      summary: Get list of charge histories
+      summary: 購入履歴の一覧取得API
       description: 以前の注文（チャージ）の履歴情報を取得します。
       operationId: getChargeHistories
       parameters:
@@ -624,7 +695,7 @@ paths:
             maximum: 20
       responses:
         '200':
-          description: 注文履歴の取得に成功しました。
+          description: 購入履歴の一覧取得に成功しました。
           content:
             application/json:
               schema:

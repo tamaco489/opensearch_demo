@@ -15,67 +15,73 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// Checks the health of API
+	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(c *gin.Context)
-	// Delete payment customer
+	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
-	// Create new payment customer
+	// 外部決済向けサービスのアカウント登録API
 	// (POST /v1/payment/customers)
 	CreateCustomer(c *gin.Context)
-	// Get payment customer details
+	// 外部決済向けサービスのアカウント取得API
 	// (GET /v1/payment/customers/{userID})
 	GetCustomerByUserID(c *gin.Context, userID int64)
-	// Delete credit card
+	// 登録済みクレジットカードの削除API
 	// (DELETE /v1/payments/cards)
 	DeleteCreditCard(c *gin.Context)
-	// Get credit card list
+	// 登録済みクレジットカードの一覧取得API
 	// (GET /v1/payments/cards)
 	GetCreditCards(c *gin.Context)
-	// Create new credit card
+	// クレジットカードの新規登録API
 	// (POST /v1/payments/cards)
 	CreateCreditCard(c *gin.Context)
-	// Create new charge
+	// 商品の購入API
 	// (POST /v1/payments/charges)
 	CreateCharge(c *gin.Context)
-	// Get list of charge histories
+	// 購入履歴の一覧取得API
 	// (GET /v1/payments/charges/histories)
 	GetChargeHistories(c *gin.Context, params GetChargeHistoriesParams)
-	// Create new reservation
+	// 商品の予約API
 	// (POST /v1/payments/reservations)
 	CreateReservation(c *gin.Context)
-	// Get list of products
+	// 商品の一覧情報取得API
 	// (GET /v1/products)
 	GetProducts(c *gin.Context, params GetProductsParams)
-	// Get product details
+	// 商品の詳細情報取得API
 	// (GET /v1/products/{productID})
 	GetProductByID(c *gin.Context, productID int64)
-	// Get list of product comments by product id
+	// 商品に関連するコメント一覧の取得API
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(c *gin.Context, productID uint64, params GetProductCommentsParams)
-	// Create product comment
+	// 商品に対してのコメント登録API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(c *gin.Context, productID uint64)
-	// Delete product comment
+	// コメントに対しての「いいね」を取り消すAPI
+	// (DELETE /v1/products/{productID}/comments/{commentID}/like)
+	DeleteLikeProductComment(c *gin.Context, productID uint64, commentID uint64)
+	// コメントに対しての「いいね」API
+	// (POST /v1/products/{productID}/comments/{commentID}/like)
+	CreateLikeProductComment(c *gin.Context, productID uint64, commentID uint64)
+	// 自身のコメント情報削除API
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(c *gin.Context, productID uint64, commentID uint64)
-	// Get product my comment details
+	// 自身のコメント情報取得API
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyComment(c *gin.Context, productID uint64, commentID uint64)
-	// Create or update product comment
+	// 自身のコメント情報更新API
 	// (PUT /v1/products/{productID}/users/comments/{commentID})
 	UpdateProductMyComment(c *gin.Context, productID uint64, commentID uint64)
-	// Create new user
+	// ユーザの新規登録API
 	// (POST /v1/users)
 	CreateUser(c *gin.Context)
-	// Get user information about myself
+	// 自身のユーザ情報取得API
 	// (GET /v1/users/me)
 	GetMe(c *gin.Context)
-	// Create user profile
+	// プロフィール情報の新規登録API
 	// (POST /v1/users/profiles)
 	CreateProfile(c *gin.Context)
-	// Get profile information about myself
+	// 自身のプロフィール情報取得API
 	// (GET /v1/users/profiles/me)
 	GetProfileMe(c *gin.Context)
 }
@@ -402,6 +408,76 @@ func (siw *ServerInterfaceWrapper) CreateProductComment(c *gin.Context) {
 	siw.Handler.CreateProductComment(c, productID)
 }
 
+// DeleteLikeProductComment operation middleware
+func (siw *ServerInterfaceWrapper) DeleteLikeProductComment(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.DeleteLikeProductComment(c, productID, commentID)
+}
+
+// CreateLikeProductComment operation middleware
+func (siw *ServerInterfaceWrapper) CreateLikeProductComment(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.CreateLikeProductComment(c, productID, commentID)
+}
+
 // DeleteProductMyComment operation middleware
 func (siw *ServerInterfaceWrapper) DeleteProductMyComment(c *gin.Context) {
 
@@ -608,6 +684,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.GET(options.BaseURL+"/v1/products/:productID", wrapper.GetProductByID)
 	router.GET(options.BaseURL+"/v1/products/:productID/comments", wrapper.GetProductComments)
 	router.POST(options.BaseURL+"/v1/products/:productID/comments", wrapper.CreateProductComment)
+	router.DELETE(options.BaseURL+"/v1/products/:productID/comments/:commentID/like", wrapper.DeleteLikeProductComment)
+	router.POST(options.BaseURL+"/v1/products/:productID/comments/:commentID/like", wrapper.CreateLikeProductComment)
 	router.DELETE(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.DeleteProductMyComment)
 	router.GET(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.GetProductMyComment)
 	router.PUT(options.BaseURL+"/v1/products/:productID/users/comments/:commentID", wrapper.UpdateProductMyComment)
@@ -1146,6 +1224,96 @@ func (response CreateProductComment500Response) VisitCreateProductCommentRespons
 	return nil
 }
 
+type DeleteLikeProductCommentRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	CommentID uint64 `json:"commentID"`
+}
+
+type DeleteLikeProductCommentResponseObject interface {
+	VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error
+}
+
+type DeleteLikeProductComment204Response struct {
+}
+
+func (response DeleteLikeProductComment204Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteLikeProductComment400Response = BadRequestResponse
+
+func (response DeleteLikeProductComment400Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type DeleteLikeProductComment401Response = UnauthorizedResponse
+
+func (response DeleteLikeProductComment401Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type DeleteLikeProductComment404Response = NotFoundResponse
+
+func (response DeleteLikeProductComment404Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteLikeProductComment500Response = InternalServerErrorResponse
+
+func (response DeleteLikeProductComment500Response) VisitDeleteLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
+type CreateLikeProductCommentRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	CommentID uint64 `json:"commentID"`
+}
+
+type CreateLikeProductCommentResponseObject interface {
+	VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error
+}
+
+type CreateLikeProductComment204Response struct {
+}
+
+func (response CreateLikeProductComment204Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type CreateLikeProductComment400Response = BadRequestResponse
+
+func (response CreateLikeProductComment400Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(400)
+	return nil
+}
+
+type CreateLikeProductComment401Response = UnauthorizedResponse
+
+func (response CreateLikeProductComment401Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type CreateLikeProductComment404Response = NotFoundResponse
+
+func (response CreateLikeProductComment404Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type CreateLikeProductComment500Response = InternalServerErrorResponse
+
+func (response CreateLikeProductComment500Response) VisitCreateLikeProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
 type DeleteProductMyCommentRequestObject struct {
 	ProductID uint64 `json:"productID"`
 	CommentID uint64 `json:"commentID"`
@@ -1455,67 +1623,73 @@ func (response GetProfileMe500Response) VisitGetProfileMeResponse(w http.Respons
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// Checks the health of API
+	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
-	// Delete payment customer
+	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(ctx *gin.Context, request DeleteCustomerRequestObject) (DeleteCustomerResponseObject, error)
-	// Create new payment customer
+	// 外部決済向けサービスのアカウント登録API
 	// (POST /v1/payment/customers)
 	CreateCustomer(ctx *gin.Context, request CreateCustomerRequestObject) (CreateCustomerResponseObject, error)
-	// Get payment customer details
+	// 外部決済向けサービスのアカウント取得API
 	// (GET /v1/payment/customers/{userID})
 	GetCustomerByUserID(ctx *gin.Context, request GetCustomerByUserIDRequestObject) (GetCustomerByUserIDResponseObject, error)
-	// Delete credit card
+	// 登録済みクレジットカードの削除API
 	// (DELETE /v1/payments/cards)
 	DeleteCreditCard(ctx *gin.Context, request DeleteCreditCardRequestObject) (DeleteCreditCardResponseObject, error)
-	// Get credit card list
+	// 登録済みクレジットカードの一覧取得API
 	// (GET /v1/payments/cards)
 	GetCreditCards(ctx *gin.Context, request GetCreditCardsRequestObject) (GetCreditCardsResponseObject, error)
-	// Create new credit card
+	// クレジットカードの新規登録API
 	// (POST /v1/payments/cards)
 	CreateCreditCard(ctx *gin.Context, request CreateCreditCardRequestObject) (CreateCreditCardResponseObject, error)
-	// Create new charge
+	// 商品の購入API
 	// (POST /v1/payments/charges)
 	CreateCharge(ctx *gin.Context, request CreateChargeRequestObject) (CreateChargeResponseObject, error)
-	// Get list of charge histories
+	// 購入履歴の一覧取得API
 	// (GET /v1/payments/charges/histories)
 	GetChargeHistories(ctx *gin.Context, request GetChargeHistoriesRequestObject) (GetChargeHistoriesResponseObject, error)
-	// Create new reservation
+	// 商品の予約API
 	// (POST /v1/payments/reservations)
 	CreateReservation(ctx *gin.Context, request CreateReservationRequestObject) (CreateReservationResponseObject, error)
-	// Get list of products
+	// 商品の一覧情報取得API
 	// (GET /v1/products)
 	GetProducts(ctx *gin.Context, request GetProductsRequestObject) (GetProductsResponseObject, error)
-	// Get product details
+	// 商品の詳細情報取得API
 	// (GET /v1/products/{productID})
 	GetProductByID(ctx *gin.Context, request GetProductByIDRequestObject) (GetProductByIDResponseObject, error)
-	// Get list of product comments by product id
+	// 商品に関連するコメント一覧の取得API
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(ctx *gin.Context, request GetProductCommentsRequestObject) (GetProductCommentsResponseObject, error)
-	// Create product comment
+	// 商品に対してのコメント登録API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(ctx *gin.Context, request CreateProductCommentRequestObject) (CreateProductCommentResponseObject, error)
-	// Delete product comment
+	// コメントに対しての「いいね」を取り消すAPI
+	// (DELETE /v1/products/{productID}/comments/{commentID}/like)
+	DeleteLikeProductComment(ctx *gin.Context, request DeleteLikeProductCommentRequestObject) (DeleteLikeProductCommentResponseObject, error)
+	// コメントに対しての「いいね」API
+	// (POST /v1/products/{productID}/comments/{commentID}/like)
+	CreateLikeProductComment(ctx *gin.Context, request CreateLikeProductCommentRequestObject) (CreateLikeProductCommentResponseObject, error)
+	// 自身のコメント情報削除API
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(ctx *gin.Context, request DeleteProductMyCommentRequestObject) (DeleteProductMyCommentResponseObject, error)
-	// Get product my comment details
+	// 自身のコメント情報取得API
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyComment(ctx *gin.Context, request GetProductMyCommentRequestObject) (GetProductMyCommentResponseObject, error)
-	// Create or update product comment
+	// 自身のコメント情報更新API
 	// (PUT /v1/products/{productID}/users/comments/{commentID})
 	UpdateProductMyComment(ctx *gin.Context, request UpdateProductMyCommentRequestObject) (UpdateProductMyCommentResponseObject, error)
-	// Create new user
+	// ユーザの新規登録API
 	// (POST /v1/users)
 	CreateUser(ctx *gin.Context, request CreateUserRequestObject) (CreateUserResponseObject, error)
-	// Get user information about myself
+	// 自身のユーザ情報取得API
 	// (GET /v1/users/me)
 	GetMe(ctx *gin.Context, request GetMeRequestObject) (GetMeResponseObject, error)
-	// Create user profile
+	// プロフィール情報の新規登録API
 	// (POST /v1/users/profiles)
 	CreateProfile(ctx *gin.Context, request CreateProfileRequestObject) (CreateProfileResponseObject, error)
-	// Get profile information about myself
+	// 自身のプロフィール情報取得API
 	// (GET /v1/users/profiles/me)
 	GetProfileMe(ctx *gin.Context, request GetProfileMeRequestObject) (GetProfileMeResponseObject, error)
 }
@@ -1920,6 +2094,62 @@ func (sh *strictHandler) CreateProductComment(ctx *gin.Context, productID uint64
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(CreateProductCommentResponseObject); ok {
 		if err := validResponse.VisitCreateProductCommentResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteLikeProductComment operation middleware
+func (sh *strictHandler) DeleteLikeProductComment(ctx *gin.Context, productID uint64, commentID uint64) {
+	var request DeleteLikeProductCommentRequestObject
+
+	request.ProductID = productID
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteLikeProductComment(ctx, request.(DeleteLikeProductCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteLikeProductComment")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(DeleteLikeProductCommentResponseObject); ok {
+		if err := validResponse.VisitDeleteLikeProductCommentResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// CreateLikeProductComment operation middleware
+func (sh *strictHandler) CreateLikeProductComment(ctx *gin.Context, productID uint64, commentID uint64) {
+	var request CreateLikeProductCommentRequestObject
+
+	request.ProductID = productID
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.CreateLikeProductComment(ctx, request.(CreateLikeProductCommentRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "CreateLikeProductComment")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(CreateLikeProductCommentResponseObject); ok {
+		if err := validResponse.VisitCreateLikeProductCommentResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

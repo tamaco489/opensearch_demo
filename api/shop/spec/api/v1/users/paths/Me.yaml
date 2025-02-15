@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - users
-  summary: Get user information about myself
+  summary: 自身のユーザ情報取得API
   description: 自身のユーザー情報を取得する
   operationId: getMe
   responses:

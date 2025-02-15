@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - products
-  summary: Get product details
+  summary: 商品の詳細情報取得API
   description: 商品IDに合致する商品情報の詳細を取得する
   operationId: getProductByID
   parameters:

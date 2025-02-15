@@ -2,8 +2,8 @@ post:
   tags:
     - v1
     - users
-  summary: Create new user
-  description: ユーザを新規作成します。
+  summary: ユーザの新規登録API
+  description: ユーザを新規登録します。
   operationId: createUser
   responses:
     '201':
