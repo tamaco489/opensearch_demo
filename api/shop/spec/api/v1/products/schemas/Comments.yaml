@@ -15,7 +15,6 @@ properties:
         - content
         - created_at
         - like_count
-        - rate
         - report_reasons
         - user
       properties:
@@ -42,13 +41,6 @@ properties:
           format: uint64
           description: いいねの数
           example: 15
-        rate:
-          type: integer
-          format: uint32
-          description: 評価（1〜5の整数）
-          minimum: 1
-          maximum: 5
-          example: 4
         report_reasons:
           type: array
           description: コメントに対して報告された理由

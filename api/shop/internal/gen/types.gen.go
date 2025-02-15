@@ -114,9 +114,6 @@ type GetProductComments struct {
 	// LikeCount いいねの数
 	LikeCount uint64 `json:"like_count"`
 
-	// Rate 評価（1〜5の整数）
-	Rate uint32 `json:"rate"`
-
 	// ReportReasons コメントに対して報告された理由
 	ReportReasons []ReportReason `json:"report_reasons"`
 
@@ -226,9 +223,6 @@ type GetMyCommentByID struct {
 	// LikeCount いいねの数
 	LikeCount uint64 `json:"like_count"`
 
-	// Rate 評価（1〜5の整数）
-	Rate uint32 `json:"rate"`
-
 	// ReportReasons コメントに対して報告された理由
 	ReportReasons []ReportReason `json:"report_reasons"`
 
@@ -298,6 +292,9 @@ type ProductByID struct {
 	// Price 定価（税込、日本円）
 	Price float32 `json:"price"`
 
+	// Rate 商品に対するユーザの評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
 	// StockQuantity 在庫数
 	StockQuantity int32 `json:"stock_quantity"`
 
@@ -351,6 +348,9 @@ type GetProducts struct {
 
 	// Price 定価（税込、日本円）
 	Price float32 `json:"price"`
+
+	// Rate 商品に対するユーザの評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
 
 	// StockQuantity 在庫数
 	StockQuantity int32 `json:"stock_quantity"`

@@ -26,6 +26,7 @@ func (c *Controllers) GetProducts(ctx *gin.Context, request gen.GetProductsReque
 			StockQuantity:   50,
 			VipOnly:         false,
 			ImageUrl:        "https://example.com/images/20001001/product.jpg",
+			Rate:            4,
 		},
 		{
 			Id:              20001002,
@@ -41,6 +42,7 @@ func (c *Controllers) GetProducts(ctx *gin.Context, request gen.GetProductsReque
 			StockQuantity:   10,
 			VipOnly:         true,
 			ImageUrl:        "https://example.com/images/20001002/product.jpg",
+			Rate:            5,
 		},
 		{
 			Id:              20001003,
@@ -56,6 +58,7 @@ func (c *Controllers) GetProducts(ctx *gin.Context, request gen.GetProductsReque
 			StockQuantity:   100,
 			VipOnly:         false,
 			ImageUrl:        "https://example.com/images/20001002/product.jpg",
+			Rate:            2,
 		},
 	}
 
