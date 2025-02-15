@@ -1,0 +1,22 @@
+title: CommentByUser
+type: object
+required:
+  - user_id
+  - user_name
+  - avatar_url
+description: コメントを投稿したユーザー情報
+properties:
+  user_id:
+    type: integer
+    format: int64
+    description: ユーザーの一意なID
+    example: 12345
+  user_name:
+    type: string
+    description: ユーザーの表示名
+    example: "潔 世一"
+  avatar_url:
+    type: string
+    format: uri
+    description: ユーザーのアバター画像URL
+    example: "https://example.com/avatar.jpg"
