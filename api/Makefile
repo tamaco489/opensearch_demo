@@ -77,44 +77,43 @@ get-product-by-id:
 # コメント系API
 get-product-comments:
 	curl -sX 'GET' \
-		'http://localhost:8080/shop/v1/products/10001001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
+		'http://localhost:8080/shop/v1/products/20010001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
 create-product-comment:
 	curl -i -sX 'POST' \
-		'http://localhost:8080/shop/v1/products/10001001/comments' \
+		'http://localhost:8080/shop/v1/products/20010001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
 get-product-my-comment:
-	curl -sX 'GET' \ \
-	curl -sX 'GET' \ \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
 
 update-product-my-comment:
 	curl -i -X 'PUT' \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "まずまず商品でした", "content": "価格が少し高いです。", "rate": 3}'
 
 delete-product-my-comment:
 	curl -i -X 'DELETE' \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*'
 
 # いいね系API
 create-like-product-comment:
 	curl -i -X 'POST' \
-		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
 delete-like-product-comment:
 	curl -i -X 'DELETE' \
-		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
