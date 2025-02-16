@@ -9,8 +9,7 @@ import (
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/logger"
-
-	open_search "github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/aws_open_search"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/open_search"
 )
 
 func NewHShopAPIServer() (*http.Server, error) {
