@@ -207,7 +207,7 @@ search-comment-by-product-id:
 search-comment-by-product-id-and-created_at-desc:
 	curl -X GET "localhost:9200/product_comments/_search?pretty" \
 		-H 'Content-Type: application/json' \
-		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{ "created_at": { "order": "desc" } }], "size": 1}'
+		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}'
 
 search-comment-by-product-id-and-comment-id:
 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
