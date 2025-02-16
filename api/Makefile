@@ -81,11 +81,11 @@ get-product-comments:
 		-H 'accept: application/json' | jq .
 
 create-product-comment:
-	curl -sX 'POST' \
+	curl -i -sX 'POST' \
 		'http://localhost:8080/shop/v1/products/10001001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
-		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}' | jq .
+		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
 get-product-my-comment:
 	curl -sX 'GET' \ \
