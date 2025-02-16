@@ -3,11 +3,11 @@ package usecase
 import (
 	"context"
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/entity"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 )
 
@@ -26,7 +26,6 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 
 	// 本来はctxから取得したsubなどでuser_idを特定する
 	var userID uint64 = 25540992
-	log.Println("[INFO] product_id:", request.ProductID, "user_id:", userID)
 
 	// 検索クエリをJSON文字列として構築
 	// query := fmt.Sprintf(`{"query": {"match": {"product_id": %d}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}`, request.ProductID)
@@ -68,9 +67,16 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 		}
 	}
 
-	log.Println("[INFO] comment_id:", commentID)
+	newComment := entity.NewProductComment(
+		commentID,
+		request.ProductID,
+		userID,
+		request.Body.Title,
+		request.Body.Content,
+		request.Body.Rate,
+	)
 
 	return gen.CreateProductComment201JSONResponse{
-		Id: commentID,
+		Id: newComment.ID,
 	}, nil
 }
