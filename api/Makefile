@@ -85,7 +85,7 @@ create-product-comment:
 		'http://localhost:8080/shop/v1/products/20010001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
-		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
+		-d '{"title": "思っていた以上に中々良い商品でした。", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
 get-product-my-comment:
 	curl -sX 'GET' \
