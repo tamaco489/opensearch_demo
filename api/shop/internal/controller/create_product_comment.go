@@ -3,6 +3,7 @@ package controller
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/usecase"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
@@ -46,7 +47,7 @@ func (c *Controllers) CreateProductComment(ctx *gin.Context, request gen.CreateP
 		return gen.CreateProfile400Response{}, nil
 	}
 
-	return gen.CreateProductComment201JSONResponse{
-		Id: 70235591,
-	}, nil
+	u := usecase.NewCreateProductComment()
+
+	return u.CreateProductComment(ctx, request)
 }
