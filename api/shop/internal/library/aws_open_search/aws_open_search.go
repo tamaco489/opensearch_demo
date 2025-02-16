@@ -13,6 +13,7 @@ import (
 //
 // NOTE: https://opensearch.org/docs/latest/clients/go/
 func NewOpenSearchAPIClient(awsCfg aws.Config) (*opensearchapi.Client, error) {
+
 	// Create an opensearch client and use the request-signer.
 	client, err := opensearchapi.NewClient(
 		opensearchapi.Config{
@@ -33,19 +34,6 @@ func NewOpenSearchAPIClient(awsCfg aws.Config) (*opensearchapi.Client, error) {
 // NewOpenSearchAPIClientWithSigner:
 func NewOpenSearchAPIClientWithSigner(awsCfg aws.Config) (*opensearchapi.Client, error) {
 
-	var endpoint = ""
-
-	switch configuration.Get().API.Env {
-	case "dev":
-		endpoint = "https://localhost:9200"
-
-	case "stg":
-		//
-
-	default:
-		//
-	}
-
 	// Create an AWS request Signer and load AWS configuration using default config folder or env vars.
 	signer, err := requestsigner.NewSignerWithService(awsCfg, "es") // Use "aoss" for Amazon OpenSearch Serverless
 	if err != nil {
@@ -55,8 +43,10 @@ func NewOpenSearchAPIClientWithSigner(awsCfg aws.Config) (*opensearchapi.Client,
 	client, err := opensearchapi.NewClient(
 		opensearchapi.Config{
 			Client: opensearch.Config{
-				Addresses: []string{endpoint},
-				Signer:    signer,
+				Addresses: []string{
+					configuration.Get().OpenSearch.EndPoint,
+				},
+				Signer: signer,
 			},
 		},
 	)

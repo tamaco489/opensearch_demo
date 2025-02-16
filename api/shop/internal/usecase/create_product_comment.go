@@ -4,29 +4,26 @@ import (
 	"context"
 	"log"
 
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
+	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
-	open_search "github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/aws_open_search"
 )
 
 type CreateProductCommentUseCase struct {
-	// db, redis等のインスタンスは外部から注入できるようにする
+	opensearchApiClient *opensearchapi.Client
 }
 
-func NewCreateProductComment() *CreateProductCommentUseCase {
-	return &CreateProductCommentUseCase{}
+func NewCreateProductComment(
+	opensearchApiClient *opensearchapi.Client,
+) *CreateProductCommentUseCase {
+	return &CreateProductCommentUseCase{
+		opensearchApiClient,
+	}
 }
 
 // CreateProductComment は商品に対してコメントを投稿します。
 func (u *CreateProductCommentUseCase) CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error) {
 
-	awsCfg := configuration.Get().AWSConfig
-	client, err := open_search.NewOpenSearchAPIClient(awsCfg)
-	if err != nil {
-		return nil, err
-	}
-
-	res, err := client.Ping(ctx, nil)
+	res, err := u.opensearchApiClient.Ping(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
