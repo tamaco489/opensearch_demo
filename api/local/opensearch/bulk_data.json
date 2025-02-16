@@ -1,0 +1,52 @@
+{ "index": { "_index": "product_comments", "_id": "70235594" } }
+{ "product_id": 20010001, "user_id": 10010004, "title": "良いですね", "content": "価格と性能のバランスが良い", "rate": 4, "created_at": "2025-02-16 15:00:00" }
+{ "index": { "_index": "product_comments", "_id": "70235595" } }
+{ "product_id": 20010001, "user_id": 10010005, "title": "とても便利", "content": "使いやすくて毎日使っています", "rate": 5, "created_at": "2025-02-16 15:05:00" }
+{ "index": { "_index": "product_comments", "_id": "70235596" } }
+{ "product_id": 20010001, "user_id": 10010006, "title": "普通の性能", "content": "特に目立つ特徴はないが、使いやすい", "rate": 3, "created_at": "2025-02-16 15:10:00" }
+{ "index": { "_index": "product_comments", "_id": "70235597" } }
+{ "product_id": 20010001, "user_id": 10010007, "title": "壊れやすい", "content": "1ヶ月で壊れました。非常に残念です", "rate": 1, "created_at": "2025-02-16 15:15:00" }
+{ "index": { "_index": "product_comments", "_id": "70235598" } }
+{ "product_id": 20010001, "user_id": 10010008, "title": "値段なり", "content": "価格相応の性能", "rate": 3, "created_at": "2025-02-16 15:20:00" }
+{ "index": { "_index": "product_comments", "_id": "70235599" } }
+{ "product_id": 20010001, "user_id": 10010009, "title": "最高！", "content": "期待以上のパフォーマンス。購入してよかった！", "rate": 5, "created_at": "2025-02-16 15:25:00" }
+{ "index": { "_index": "product_comments", "_id": "70235600" } }
+{ "product_id": 20010001, "user_id": 10010010, "title": "使いにくい", "content": "インターフェースが不便", "rate": 2, "created_at": "2025-02-16 15:30:00" }
+{ "index": { "_index": "product_comments", "_id": "70235601" } }
+{ "product_id": 20010001, "user_id": 10010011, "title": "期待外れ", "content": "広告で見たのと違って、あまり良くなかった", "rate": 2, "created_at": "2025-02-16 15:35:00" }
+{ "index": { "_index": "product_comments", "_id": "70235602" } }
+{ "product_id": 20010001, "user_id": 10010012, "title": "便利だが高い", "content": "使い勝手は良いが、少し高いと思います", "rate": 4, "created_at": "2025-02-16 15:40:00" }
+{ "index": { "_index": "product_comments", "_id": "70235603" } }
+{ "product_id": 20010001, "user_id": 10010013, "title": "素晴らしい", "content": "とても満足しています", "rate": 5, "created_at": "2025-02-16 15:45:00" }
+{ "index": { "_index": "product_comments", "_id": "70235604" } }
+{ "product_id": 20010002, "user_id": 10010014, "title": "普通の商品", "content": "使い心地は普通", "rate": 3, "created_at": "2025-02-16 16:00:00" }
+{ "index": { "_index": "product_comments", "_id": "70235605" } }
+{ "product_id": 20010002, "user_id": 10010015, "title": "まぁまぁ", "content": "使う分には問題ないが特にいいわけではない", "rate": 3, "created_at": "2025-02-16 16:05:00" }
+{ "index": { "_index": "product_comments", "_id": "70235606" } }
+{ "product_id": 20010002, "user_id": 10010016, "title": "役に立つ", "content": "普段使いにはちょうど良い", "rate": 4, "created_at": "2025-02-16 16:10:00" }
+{ "index": { "_index": "product_comments", "_id": "70235607" } }
+{ "product_id": 20010002, "user_id": 10010017, "title": "期待外れ", "content": "性能が思ったより悪かった", "rate": 2, "created_at": "2025-02-16 16:15:00" }
+{ "index": { "_index": "product_comments", "_id": "70235608" } }
+{ "product_id": 20010002, "user_id": 10010018, "title": "すごく良い", "content": "非常に使いやすい", "rate": 5, "created_at": "2025-02-16 16:20:00" }
+{ "index": { "_index": "product_comments", "_id": "70235609" } }
+{ "product_id": 20010002, "user_id": 10010019, "title": "良い", "content": "価格と機能がバランスよい", "rate": 4, "created_at": "2025-02-16 16:25:00" }
+{ "index": { "_index": "product_comments", "_id": "70235610" } }
+{ "product_id": 20010002, "user_id": 10010020, "title": "いまいち", "content": "想像していたものとは違う", "rate": 2, "created_at": "2025-02-16 16:30:00" }
+{ "index": { "_index": "product_comments", "_id": "70235611" } }
+{ "product_id": 20010002, "user_id": 10010021, "title": "満足", "content": "使い心地が良い", "rate": 4, "created_at": "2025-02-16 16:35:00" }
+{ "index": { "_index": "product_comments", "_id": "70235612" } }
+{ "product_id": 20010002, "user_id": 10010022, "title": "良い商品", "content": "バランスが取れている", "rate": 5, "created_at": "2025-02-16 16:40:00" }
+{ "index": { "_index": "product_comments", "_id": "70235613" } }
+{ "product_id": 20010002, "user_id": 10010023, "title": "特に不満なし", "content": "使用感が良かった", "rate": 5, "created_at": "2025-02-16 16:45:00" }
+{ "index": { "_index": "product_comments", "_id": "70235614" } }
+{ "product_id": 20010002, "user_id": 10010024, "title": "普通", "content": "特に良いとも悪いとも言えない", "rate": 3, "created_at": "2025-02-16 16:50:00" }
+{ "index": { "_index": "product_comments", "_id": "70235615" } }
+{ "product_id": 20010003, "user_id": 10010025, "title": "微妙な商品", "content": "期待していたものと異なる", "rate": 2, "created_at": "2025-02-16 17:00:00" }
+{ "index": { "_index": "product_comments", "_id": "70235616" } }
+{ "product_id": 20010003, "user_id": 10010026, "title": "まあまあ", "content": "可もなく不可もなく", "rate": 3, "created_at": "2025-02-16 17:05:00" }
+{ "index": { "_index": "product_comments", "_id": "70235617" } }
+{ "product_id": 20010003, "user_id": 10010027, "title": "思ったよりよかった", "content": "予想以上に良かったです", "rate": 4, "created_at": "2025-02-16 17:10:00" }
+{ "index": { "_index": "product_comments", "_id": "70235618" } }
+{ "product_id": 20010003, "user_id": 10010028, "title": "最高です", "content": "本当に素晴らしい商品", "rate": 5, "created_at": "2025-02-16 17:15:00" }
+{ "index": { "_index": "product_comments", "_id": "70235619" } }
+{ "product_id": 20010003, "user_id": 10010029, "title": "良い", "content": "コストパフォーマンスが素晴らしい", "rate": 4, "created_at": "2025-02-16 17:20:00" }
