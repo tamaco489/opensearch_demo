@@ -71,6 +71,6 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	log.Println("[INFO] comment_id:", commentID)
 
 	return gen.CreateProductComment201JSONResponse{
-		Id: 70235591,
+		Id: commentID,
 	}, nil
 }
