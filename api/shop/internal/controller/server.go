@@ -6,8 +6,11 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/logger"
+
+	open_search "github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/aws_open_search"
 )
 
 func NewHShopAPIServer() (*http.Server, error) {
@@ -25,9 +28,12 @@ func NewHShopAPIServer() (*http.Server, error) {
 	// 万が一panicが発生した場合でも、サーバは適切にエラーレスポンスを返し、正常に動作し続ける。※HTTP Status Code 5xx を返す
 	r.Use(gin.Recovery())
 
-	// NOTE: envは一旦固定値で渡す
-	env := "dev"
-	apiController := NewControllers(env)
+	client, err := open_search.NewOpenSearchAPIClient(configuration.Get().AWSConfig)
+	if err != nil {
+		return nil, err
+	}
+
+	apiController := NewControllers(configuration.Get().API.Env, client)
 	strictServer := gen.NewStrictHandler(apiController, nil)
 
 	gen.RegisterHandlersWithOptions(

@@ -9,6 +9,8 @@ services:
       - ~/.cache/go-build:/root/.cache/go-build
     ports:
       - "8080:8080"
+    env_file:
+      - ./shop/.env
     networks:
       - sandbox
 

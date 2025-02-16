@@ -177,3 +177,33 @@ get-charge-histories:
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/payments/charges/histories?offset=0&limit=10' \
 		-H 'accept: application/json' | jq .
+
+
+# =================================================================
+# OpenSearch API Request
+# =================================================================
+.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-comment-id
+search-comment-all:
+	curl -sX GET "http://localhost:9200/product_comments/_search?size=50&pretty" | jq .
+
+search-comment-by-product-id:
+	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
+	-H 'Content-Type: application/json' \
+	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }]}}}' | jq .
+
+search-comment-by-product-id-and-comment-id:
+	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
+	-H 'Content-Type: application/json' \
+	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010002 } }, { "term": { "_id": "70235592" } }]}}}' | jq .
+
+
+.PHONY: delete-all-ops
+delete-all-ops:
+	curl -i -sX POST "http://localhost:9200/product_comments/_delete_by_query" \
+		-H 'Content-Type: application/json' \
+		-d '{"query": {"match_all": {}}}'
+
+
+.PHONY: bulk-insert-comments
+bulk-insert-comments:
+	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
