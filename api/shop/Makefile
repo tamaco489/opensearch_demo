@@ -1,12 +1,14 @@
 # =================================================================
 # setup tools
 # =================================================================
-.PHONY: install-tools
-install-tools:
+.PHONY: install-tools setup-env
+setup-env:
+	cp -p .env_sample .env
+
+install-tools: setup-env
 	go install github.com/deepmap/oapi-codegen/cmd/oapi-codegen@latest
 	go install golang.org/x/tools/cmd/godoc@latest
 	npm i -g @redocly/cli@latest
-	cp -p .env_sample .env
 
 
 # =================================================================
