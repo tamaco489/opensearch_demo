@@ -57,10 +57,10 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	var commentID uint64
 
 	// hitしなかった場合は指定された商品に対してコメントが1つもないと見なし、コメントIDに1を指定
-	if len(searchResult.Hits.Hits) == 0 {
+	if searchResult.Hits.Total.Value == 0 {
 		commentID = 1
 	}
-	if len(searchResult.Hits.Hits) > 0 {
+	if searchResult.Hits.Total.Value > 0 {
 		commentIDStr := searchResult.Hits.Hits[0].ID
 		commentID, err = strconv.ParseUint(commentIDStr, 10, 64)
 		if err != nil {
