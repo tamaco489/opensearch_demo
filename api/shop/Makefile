@@ -1,7 +1,7 @@
 # =================================================================
 # setup tools
 # =================================================================
-.PHONY: install-tools setup-env
+.PHONY: setup-env install-tools
 setup-env:
 	cp -p .env_sample .env
 
