@@ -16,6 +16,10 @@ type Config struct {
 		ServiceName string `envconfig:"API_SERVICE_NAME" default:"shop-api"`
 		EndPoint    string `envconfig:"API_ENDPOINT" default:"http://localhost:8080"`
 	}
+	OpenSearch struct {
+		EndPoint             string `envconfig:"OPENSEARCH_ENDPOINT"`
+		InitialAdminPassword string `envconfig:"OPENSEARCH_INITIAL_ADMIN_PASSWORD"`
+	}
 	Logging   string `envconfig:"LOGGING" default:"off"`
 	AWSConfig aws.Config
 }

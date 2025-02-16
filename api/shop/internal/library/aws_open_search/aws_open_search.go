@@ -13,25 +13,13 @@ import (
 //
 // NOTE: https://opensearch.org/docs/latest/clients/go/
 func NewOpenSearchAPIClient(awsCfg aws.Config) (*opensearchapi.Client, error) {
-
-	var endpoint = ""
-
-	switch configuration.Get().API.Env {
-	case "dev":
-		endpoint = "http://opensearch:9200"
-
-	case "stg":
-		//
-
-	default:
-		//
-	}
-
 	// Create an opensearch client and use the request-signer.
 	client, err := opensearchapi.NewClient(
 		opensearchapi.Config{
 			Client: opensearch.Config{
-				Addresses: []string{endpoint},
+				Addresses: []string{
+					configuration.Get().OpenSearch.EndPoint,
+				},
 			},
 		},
 	)
