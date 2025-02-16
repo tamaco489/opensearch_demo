@@ -1,7 +1,9 @@
 package usecase
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -22,6 +24,8 @@ func NewCreateProductComment(opsApiClient *opensearchapi.Client) *createProductC
 }
 
 // CreateProductComment は商品に対してコメントを投稿します。
+//
+// NOTE: 2回目のコメントが直前のコメントを上書きしてしまうため原因を調査し、修正する。
 func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error) {
 
 	// 本来はctxから取得したsubなどでuser_idを特定する
@@ -54,13 +58,14 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 
 	// 検索結果から直近のコメントIDを抽出
 	var commentID uint64
+	var commentIDStr string
 
 	// hitしなかった場合は指定された商品に対してコメントが1つもないと見なし、コメントIDに1を指定
 	if searchResult.Hits.Total.Value == 0 {
 		commentID = 1
 	}
 	if searchResult.Hits.Total.Value > 0 {
-		commentIDStr := searchResult.Hits.Hits[0].ID
+		commentIDStr = searchResult.Hits.Hits[0].ID
 		commentID, err = strconv.ParseUint(commentIDStr, 10, 64)
 		if err != nil {
 			return gen.CreateCharge500Response{}, fmt.Errorf("failed to convert comment ID to uint64: %v", err)
@@ -68,13 +73,32 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	}
 
 	newComment := entity.NewProductComment(
-		commentID,
+		commentID, // 現時点で最も新しいコメントIDを指定
 		request.ProductID,
 		userID,
 		request.Body.Title,
 		request.Body.Content,
 		request.Body.Rate,
 	)
+
+	// JSON に変換
+	commentJSON, err := json.Marshal(newComment)
+	if err != nil {
+		return gen.CreateProductComment500Response{}, fmt.Errorf("failed to marshal new comment: %v", err)
+	}
+
+	idxRequest := opensearchapi.IndexReq{
+		Index:      "product_comments",
+		DocumentID: strconv.FormatUint(newComment.ID, 10),
+		Body:       bytes.NewReader(commentJSON),
+		Params: opensearchapi.IndexParams{
+			Refresh: "true",
+		},
+	}
+	_, err = u.opsApiClient.Index(ctx, idxRequest)
+	if err != nil {
+		return gen.CreateProductComment500Response{}, fmt.Errorf("error creating product comment: %v", err)
+	}
 
 	return gen.CreateProductComment201JSONResponse{
 		Id: newComment.ID,
