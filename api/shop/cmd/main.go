@@ -10,13 +10,18 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/controller"
 )
 
 func main() {
 	ctx := context.Background()
+	_, err := configuration.Load(ctx)
+	if err != nil {
+		slog.Error("Failed to read configuration", "error", err)
+		panic(err)
+	}
 
-	//
 	server, err := controller.NewHShopAPIServer()
 	if err != nil {
 		panic(err)
