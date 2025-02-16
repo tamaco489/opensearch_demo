@@ -60,6 +60,7 @@ logs:
 go-doc:
 	# godoc サーバーを起動してブラウザで確認
 	go doc controller.NewCorsConfig
+	go doc controller.CreateProductComment
 	@echo "Starting godoc server..."
 	@godoc -http=:6060 &
 	@echo "Godoc server started at http://localhost:6060"
