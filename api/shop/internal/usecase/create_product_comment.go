@@ -8,20 +8,18 @@ import (
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 )
 
-type CreateProductCommentUseCase struct {
+type createProductCommentUseCase struct {
 	opsApiClient *opensearchapi.Client
 }
 
-func NewCreateProductComment(
-	opsApiClient *opensearchapi.Client,
-) *CreateProductCommentUseCase {
-	return &CreateProductCommentUseCase{
+func NewCreateProductComment(opsApiClient *opensearchapi.Client) *createProductCommentUseCase {
+	return &createProductCommentUseCase{
 		opsApiClient: opsApiClient,
 	}
 }
 
 // CreateProductComment は商品に対してコメントを投稿します。
-func (u *CreateProductCommentUseCase) CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error) {
+func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error) {
 
 	res, err := u.opsApiClient.Ping(ctx, nil)
 	if err != nil {

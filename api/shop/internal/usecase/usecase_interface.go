@@ -9,7 +9,3 @@ import (
 type IProductCommentUseCase interface {
 	CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error)
 }
-
-var (
-	_ (IProductCommentUseCase) = (*CreateProductCommentUseCase)(nil)
-)
