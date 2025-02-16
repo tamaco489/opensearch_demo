@@ -7,15 +7,13 @@ import (
 
 type Controllers struct {
 	env                   string
-	productCommentUseCase usecase.CreateProductCommentUseCase
+	productCommentUseCase usecase.IProductCommentUseCase
 }
 
-func NewControllers(
-	env string,
-	opensearchApiClient *opensearchapi.Client,
-) *Controllers {
+func NewControllers(env string, opensearchApiClient *opensearchapi.Client) *Controllers {
+	productCommentUseCase := usecase.NewCreateProductComment(opensearchApiClient)
 	return &Controllers{
 		env:                   env,
-		productCommentUseCase: *usecase.NewCreateProductComment(opensearchApiClient),
+		productCommentUseCase: productCommentUseCase,
 	}
 }

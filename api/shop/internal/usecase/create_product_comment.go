@@ -9,21 +9,21 @@ import (
 )
 
 type CreateProductCommentUseCase struct {
-	opensearchApiClient *opensearchapi.Client
+	opsApiClient *opensearchapi.Client
 }
 
 func NewCreateProductComment(
-	opensearchApiClient *opensearchapi.Client,
+	opsApiClient *opensearchapi.Client,
 ) *CreateProductCommentUseCase {
 	return &CreateProductCommentUseCase{
-		opensearchApiClient,
+		opsApiClient: opsApiClient,
 	}
 }
 
 // CreateProductComment は商品に対してコメントを投稿します。
 func (u *CreateProductCommentUseCase) CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error) {
 
-	res, err := u.opensearchApiClient.Ping(ctx, nil)
+	res, err := u.opsApiClient.Ping(ctx, nil)
 	if err != nil {
 		return nil, err
 	}
