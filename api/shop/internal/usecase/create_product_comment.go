@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/entity"
@@ -32,7 +33,6 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	var userID uint64 = 25540992
 
 	// 検索クエリをJSON文字列として構築
-	// query := fmt.Sprintf(`{"query": {"match": {"product_id": %d}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}`, request.ProductID)
 	query := strings.NewReader(`{
 		"query": {
 			"match_all": {}
@@ -44,11 +44,11 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	}`)
 
 	// 検索リクエストを作成、直近のコメントIDを取得する
-	// トランザクションなどを考慮すると、コメントデータはRDBMS等で管理し、そこからデータを取得したほうが保守的な観点では良さそう。
+	// NOTE: トランザクションなどを考慮すると、コメントデータはRDBMS等で管理し、そこからデータを取得したほうが保守的な観点では良さそう。
 	searchResult, err := u.opsApiClient.Search(
 		ctx,
 		&opensearchapi.SearchReq{
-			Indices: []string{"product_comments"},
+			Indices: []string{entity.ProductComments.String()},
 			Body:    query,
 		},
 	)
@@ -56,17 +56,10 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 		return gen.CreateCharge500Response{}, err
 	}
 
-	// 検索結果から直近のコメントIDを抽出
-	var commentID uint64
-	var commentIDStr string
-
-	// hitしなかった場合は指定された商品に対してコメントが1つもないと見なし、コメントIDに1を指定
-	if searchResult.Hits.Total.Value == 0 {
-		commentID = 1
-	}
+	// 初期値の設定、検索結果が0件ではない場合にのみ値の更新を行う
+	commentID := uint64(1)
 	if searchResult.Hits.Total.Value > 0 {
-		commentIDStr = searchResult.Hits.Hits[0].ID
-		commentID, err = strconv.ParseUint(commentIDStr, 10, 64)
+		commentID, err = strconv.ParseUint(searchResult.Hits.Hits[0].ID, 10, 64)
 		if err != nil {
 			return gen.CreateCharge500Response{}, fmt.Errorf("failed to convert comment ID to uint64: %v", err)
 		}
@@ -87,12 +80,14 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 		return gen.CreateProductComment500Response{}, fmt.Errorf("failed to marshal new comment: %v", err)
 	}
 
+	// OpenSearch にデータ投入
 	idxRequest := opensearchapi.IndexReq{
-		Index:      "product_comments",
+		Index:      entity.ProductComments.String(),
 		DocumentID: strconv.FormatUint(newComment.ID, 10),
 		Body:       bytes.NewReader(commentJSON),
 		Params: opensearchapi.IndexParams{
 			Refresh: "true",
+			Timeout: 5 * time.Second,
 		},
 	}
 	_, err = u.opsApiClient.Index(ctx, idxRequest)

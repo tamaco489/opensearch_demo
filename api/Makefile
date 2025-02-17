@@ -205,14 +205,14 @@ search-comment-by-product-id:
 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }]}}}' | jq .
 
 search-comment-by-product-id-and-created_at-desc:
-	curl -X GET "localhost:9200/product_comments/_search?pretty" \
+	curl -sX GET "localhost:9200/product_comments/_search?pretty" \
 		-H 'Content-Type: application/json' \
-		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}'
+		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}' | jq .
 
 search-comment-by-product-id-and-comment-id:
 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
 	-H 'Content-Type: application/json' \
-	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010003 } }, { "term": { "_id": "70235640" } }]}}}' | jq .
+	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235640" } }]}}}' | jq .
 
 # データ削除
 .PHONY: delete-all-ops
