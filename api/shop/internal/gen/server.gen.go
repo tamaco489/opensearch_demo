@@ -1210,6 +1210,13 @@ func (response CreateProductComment403Response) VisitCreateProductCommentRespons
 	return nil
 }
 
+type CreateProductComment404Response = NotFoundResponse
+
+func (response CreateProductComment404Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
 type CreateProductComment409Response = AlreadyExistsResponse
 
 func (response CreateProductComment409Response) VisitCreateProductCommentResponse(w http.ResponseWriter) error {

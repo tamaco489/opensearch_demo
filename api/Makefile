@@ -77,44 +77,43 @@ get-product-by-id:
 # コメント系API
 get-product-comments:
 	curl -sX 'GET' \
-		'http://localhost:8080/shop/v1/products/10001001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
+		'http://localhost:8080/shop/v1/products/20010001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
 create-product-comment:
 	curl -i -sX 'POST' \
-		'http://localhost:8080/shop/v1/products/10001001/comments' \
+		'http://localhost:8080/shop/v1/products/20010001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
-		-d '{"title": "とても良い商品です", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
+		-d '{"title": "思っていた以上に中々良い商品でした。", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
 get-product-my-comment:
-	curl -sX 'GET' \ \
-	curl -sX 'GET' \ \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
 
 update-product-my-comment:
 	curl -i -X 'PUT' \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "まずまず商品でした", "content": "価格が少し高いです。", "rate": 3}'
 
 delete-product-my-comment:
 	curl -i -X 'DELETE' \
-		'http://localhost:8080/shop/v1/products/10001001/users/comments/54009221' \
+		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*'
 
 # いいね系API
 create-like-product-comment:
 	curl -i -X 'POST' \
-		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
 delete-like-product-comment:
 	curl -i -X 'DELETE' \
-		'http://localhost:8080/shop/v1/products/10001001/comments/54009221/like' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
@@ -182,7 +181,21 @@ get-charge-histories:
 # =================================================================
 # OpenSearch API Request
 # =================================================================
-.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-comment-id
+# インデックス作成・削除
+.PHONY: create-product-comments-index delete-product-comments-index
+create-product-comments-index:
+	curl -i -X PUT "http://localhost:9200/product_comments" -H 'Content-Type: application/json' -d @./local/opensearch/product_comments_index.json
+
+delete-product-comments-index:
+	curl -i -X DELETE "http://localhost:9200/product_comments"
+
+# データ投入
+.PHONY: bulk-insert-comments
+bulk-insert-comments:
+	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
+
+# データ検索
+.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc search-comment-by-product-id-and-comment-id
 search-comment-all:
 	curl -sX GET "http://localhost:9200/product_comments/_search?size=50&pretty" | jq .
 
@@ -191,19 +204,19 @@ search-comment-by-product-id:
 	-H 'Content-Type: application/json' \
 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }]}}}' | jq .
 
+search-comment-by-product-id-and-created_at-desc:
+	curl -sX GET "localhost:9200/product_comments/_search?pretty" \
+		-H 'Content-Type: application/json' \
+		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}' | jq .
+
 search-comment-by-product-id-and-comment-id:
 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
 	-H 'Content-Type: application/json' \
-	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010002 } }, { "term": { "_id": "70235592" } }]}}}' | jq .
+	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235640" } }]}}}' | jq .
 
-
+# データ削除
 .PHONY: delete-all-ops
 delete-all-ops:
 	curl -i -sX POST "http://localhost:9200/product_comments/_delete_by_query" \
 		-H 'Content-Type: application/json' \
 		-d '{"query": {"match_all": {}}}'
-
-
-.PHONY: bulk-insert-comments
-bulk-insert-comments:
-	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
