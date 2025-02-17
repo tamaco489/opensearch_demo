@@ -1451,10 +1451,10 @@ components:
       title: GetProductCommentViolations
       type: object
       required:
-        - comments
+        - ng_comments
         - metadata
       properties:
-        comments:
+        ng_comments:
           type: array
           description: 商品に対するコメント違反一覧
           items:

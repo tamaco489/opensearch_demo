@@ -403,9 +403,16 @@ type UpdateProductCommentRequest struct {
 
 // Violations defines model for Violations.
 type Violations struct {
-	// Comments 商品に対するコメント違反一覧
-	Comments []GetProductCommentViolations         `json:"comments"`
 	Metadata GetProductCommentViolationsNextCursor `json:"metadata"`
+
+	// NgComments 商品に対するコメント違反一覧
+	NgComments []GetProductCommentViolations `json:"ng_comments"`
+}
+
+// GetProductCommentViolationsNextCursor defines model for .
+type GetProductCommentViolationsNextCursor struct {
+	// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+	NextCursor string `json:"next_cursor"`
 }
 
 // GetProductCommentViolations defines model for .
@@ -430,12 +437,6 @@ type GetProductCommentViolations struct {
 
 	// User コメントを投稿したユーザー情報
 	User CommentByUser `json:"user"`
-}
-
-// GetProductCommentViolationsNextCursor defines model for .
-type GetProductCommentViolationsNextCursor struct {
-	// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
-	NextCursor string `json:"next_cursor"`
 }
 
 // GetProductCommentViolationsParams defines parameters for GetProductCommentViolations.
