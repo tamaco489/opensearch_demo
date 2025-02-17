@@ -28,7 +28,8 @@ api-all-request: healthcheck sleep \
 	update-product-my-comment \
 	delete-product-my-comment \
 	create-like-product-comment \
-	delete-like-product-comment
+	delete-like-product-comment \
+	get-product-comment-violations
 
 # 生存確認API
 .PHONY: healthcheck
@@ -177,6 +178,12 @@ get-charge-histories:
 		'http://localhost:8080/shop/v1/payments/charges/histories?offset=0&limit=10' \
 		-H 'accept: application/json' | jq .
 
+# 管理者系API
+.PHONY: get-product-comment-violations
+get-product-comment-violations:
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/admin/products/10001001/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
+		-H 'accept: application/json' | jq .
 
 # =================================================================
 # OpenSearch API Request
