@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
+	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/dta"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/entity"
 	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
 )
@@ -65,17 +66,9 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 		}
 	}
 
-	newComment := entity.NewProductComment(
-		commentID, // 現時点で最も新しいコメントIDを指定
-		request.ProductID,
-		userID,
-		request.Body.Title,
-		request.Body.Content,
-		request.Body.Rate,
-	)
-
-	// JSON に変換
-	commentJSON, err := json.Marshal(newComment)
+	// Entityを生成し、jsonに変換
+	commentEntity := dta.ToProductCommentEntity(request, commentID, userID)
+	commentEntityJSON, err := json.Marshal(commentEntity)
 	if err != nil {
 		return gen.CreateProductComment500Response{}, fmt.Errorf("failed to marshal new comment: %v", err)
 	}
@@ -83,8 +76,8 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	// OpenSearch にデータ投入
 	idxRequest := opensearchapi.IndexReq{
 		Index:      entity.ProductComments.String(),
-		DocumentID: strconv.FormatUint(newComment.ID, 10),
-		Body:       bytes.NewReader(commentJSON),
+		DocumentID: strconv.FormatUint(commentEntity.ID, 10),
+		Body:       bytes.NewReader(commentEntityJSON),
 		Params: opensearchapi.IndexParams{
 			Refresh: "true",
 			Timeout: 5 * time.Second,
@@ -96,6 +89,6 @@ func (u *createProductCommentUseCase) CreateProductComment(ctx context.Context, 
 	}
 
 	return gen.CreateProductComment201JSONResponse{
-		Id: newComment.ID,
+		Id: commentEntity.ID,
 	}, nil
 }
