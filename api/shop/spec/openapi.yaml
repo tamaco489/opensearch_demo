@@ -708,6 +708,62 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/admin/products/{productID}/comments/violations:
+    get:
+      tags:
+        - v1
+        - admin
+        - admin/products/comments/violations
+      summary: 商品に関連するコメント違反一覧の取得API
+      description: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
+      operationId: getProductCommentViolations
+      parameters:
+        - name: productID
+          in: path
+          description: 取得する商品の一意なID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: cursor
+          in: query
+          description: |
+            次のページの商品コメント違反一覧を取得するためのカーソル。
+            カーソルはコメントIDをbase64でエンコードした文字列を指定する。
+          required: false
+          schema:
+            type: string
+            example: NTQwMDkwMTI=
+            default: ''
+        - name: limit
+          in: query
+          description: |
+            取得する商品コメント違反情報数を指定。
+            デフォルトは10。1度に最大20件まで取得可能。
+          required: false
+          schema:
+            type: integer
+            format: uint64
+            example: 10
+            default: 10
+            minimum: 1
+            maximum: 20
+      responses:
+        '200':
+          description: 商品コメント違反一覧の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Violations'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
 components:
   securitySchemes:
     bearerAuth:
@@ -1391,6 +1447,71 @@ components:
                 items:
                   $ref: '#/components/schemas/GetChargeHistoriesProducts'
             x-go-type-name: GetChargeHistories
+    Violations:
+      title: GetProductCommentViolations
+      type: object
+      required:
+        - ng_comments
+        - metadata
+      properties:
+        ng_comments:
+          type: array
+          description: 商品に対するコメント違反一覧
+          items:
+            type: object
+            required:
+              - id
+              - title
+              - content
+              - created_at
+              - like_count
+              - report_reasons
+              - user
+            properties:
+              id:
+                type: integer
+                format: uint64
+                description: コメントの一意なID
+                example: 1000001
+              title:
+                type: string
+                description: コメントのタイトル
+                example: 何かを蔑むような不適切なコメントのタイトル
+              content:
+                type: string
+                description: コメントの本文
+                example: 何かを蔑むような不適切なコメントの本文。
+              created_at:
+                type: string
+                format: date-time
+                description: コメントの投稿日時（ISO 8601形式, JST）
+                example: '2025-02-15T13:45:30+09:00'
+              like_count:
+                type: integer
+                format: uint64
+                description: いいねの数
+                example: 15
+              report_reasons:
+                type: array
+                description: コメントに対して報告された理由
+                items:
+                  $ref: '#/components/schemas/ReportReason'
+                example:
+                  - irrelevant
+                  - inappropriate
+              user:
+                $ref: '#/components/schemas/CommentByUser'
+            x-go-type-name: GetProductCommentViolations
+        metadata:
+          type: object
+          required:
+            - next_cursor
+          properties:
+            next_cursor:
+              type: string
+              description: 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+              example: NTQwMDk1MzY=
+          x-go-type-name: GetProductCommentViolationsNextCursor
   responses:
     BadRequest:
       description: Bad Request

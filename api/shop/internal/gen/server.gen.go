@@ -18,6 +18,9 @@ type ServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(c *gin.Context)
+	// 商品に関連するコメント違反一覧の取得API
+	// (GET /v1/admin/products/{productID}/comments/violations)
+	GetProductCommentViolations(c *gin.Context, productID uint64, params GetProductCommentViolationsParams)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
@@ -106,6 +109,51 @@ func (siw *ServerInterfaceWrapper) Healthcheck(c *gin.Context) {
 	}
 
 	siw.Handler.Healthcheck(c)
+}
+
+// GetProductCommentViolations operation middleware
+func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "productID" -------------
+	var productID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params GetProductCommentViolationsParams
+
+	// ------------- Optional query parameter "cursor" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "cursor", c.Request.URL.Query(), &params.Cursor)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter cursor: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameter("form", true, false, "limit", c.Request.URL.Query(), &params.Limit)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter limit: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.GetProductCommentViolations(c, productID, params)
 }
 
 // DeleteCustomer operation middleware
@@ -671,6 +719,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	}
 
 	router.GET(options.BaseURL+"/healthcheck", wrapper.Healthcheck)
+	router.GET(options.BaseURL+"/v1/admin/products/:productID/comments/violations", wrapper.GetProductCommentViolations)
 	router.DELETE(options.BaseURL+"/v1/payment/customers", wrapper.DeleteCustomer)
 	router.POST(options.BaseURL+"/v1/payment/customers", wrapper.CreateCustomer)
 	router.GET(options.BaseURL+"/v1/payment/customers/:userID", wrapper.GetCustomerByUserID)
@@ -727,6 +776,52 @@ func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.Respo
 	w.WriteHeader(200)
 
 	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProductCommentViolationsRequestObject struct {
+	ProductID uint64 `json:"productID"`
+	Params    GetProductCommentViolationsParams
+}
+
+type GetProductCommentViolationsResponseObject interface {
+	VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error
+}
+
+type GetProductCommentViolations200JSONResponse Violations
+
+func (response GetProductCommentViolations200JSONResponse) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
+}
+
+type GetProductCommentViolations401Response = UnauthorizedResponse
+
+func (response GetProductCommentViolations401Response) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type GetProductCommentViolations403Response = ForbiddenResponse
+
+func (response GetProductCommentViolations403Response) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(403)
+	return nil
+}
+
+type GetProductCommentViolations404Response = NotFoundResponse
+
+func (response GetProductCommentViolations404Response) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type GetProductCommentViolations500Response = InternalServerErrorResponse
+
+func (response GetProductCommentViolations500Response) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
 }
 
 type DeleteCustomerRequestObject struct {
@@ -1633,6 +1728,9 @@ type StrictServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
+	// 商品に関連するコメント違反一覧の取得API
+	// (GET /v1/admin/products/{productID}/comments/violations)
+	GetProductCommentViolations(ctx *gin.Context, request GetProductCommentViolationsRequestObject) (GetProductCommentViolationsResponseObject, error)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(ctx *gin.Context, request DeleteCustomerRequestObject) (DeleteCustomerResponseObject, error)
@@ -1731,6 +1829,34 @@ func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(HealthcheckResponseObject); ok {
 		if err := validResponse.VisitHealthcheckResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// GetProductCommentViolations operation middleware
+func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, productID uint64, params GetProductCommentViolationsParams) {
+	var request GetProductCommentViolationsRequestObject
+
+	request.ProductID = productID
+	request.Params = params
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.GetProductCommentViolations(ctx, request.(GetProductCommentViolationsRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "GetProductCommentViolations")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(GetProductCommentViolationsResponseObject); ok {
+		if err := validResponse.VisitGetProductCommentViolationsResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

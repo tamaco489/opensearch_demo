@@ -1,0 +1,55 @@
+get:
+  tags:
+    - v1
+    - admin
+    - admin/products/comments/violations
+  summary: 商品に関連するコメント違反一覧の取得API
+  description: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
+  operationId: getProductCommentViolations
+  parameters:
+    - name: productID
+      in: path
+      description: 取得する商品の一意なID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 10001001
+    - name: cursor
+      in: query
+      description: |
+        次のページの商品コメント違反一覧を取得するためのカーソル。
+        カーソルはコメントIDをbase64でエンコードした文字列を指定する。
+      required: false
+      schema:
+        type: string
+        example: "NTQwMDkwMTI="
+        default: ""
+    - name: limit
+      in: query
+      description: |
+        取得する商品コメント違反情報数を指定。
+        デフォルトは10。1度に最大20件まで取得可能。
+      required: false
+      schema:
+        type: integer
+        format: uint64
+        example: 10
+        default: 10
+        minimum: 1
+        maximum: 20
+  responses:
+    '200':
+      description: 商品コメント違反一覧の取得に成功しました。
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/Violations.yaml'
+    '401':
+      $ref: '../../../../../responses/Unauthorized.yaml'
+    '403':
+      $ref: '../../../../../responses/Forbidden.yaml'
+    '404':
+      $ref: '../../../../../responses/NotFound.yaml'
+    '500':
+      $ref: '../../../../../responses/InternalServerError.yaml'
