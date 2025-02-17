@@ -85,3 +85,7 @@ paths:
     $ref: './api/v1/payments/paths/Charge.yaml'
   /v1/payments/charges/histories:
     $ref: './api/v1/payments/paths/ChargeHistories.yaml'
+
+  # 管理者系API
+  /v1/admin/products/{productID}/comments/violations:
+    $ref: './api/v1/admin/products/comments/paths/Violations.yaml'

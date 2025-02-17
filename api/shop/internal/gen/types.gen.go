@@ -401,6 +401,54 @@ type UpdateProductCommentRequest struct {
 	Title string `json:"title"`
 }
 
+// Violations defines model for Violations.
+type Violations struct {
+	// Comments 商品に対するコメント違反一覧
+	Comments []GetProductCommentViolations         `json:"comments"`
+	Metadata GetProductCommentViolationsNextCursor `json:"metadata"`
+}
+
+// GetProductCommentViolations defines model for .
+type GetProductCommentViolations struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// CreatedAt コメントの投稿日時（ISO 8601形式, JST）
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id コメントの一意なID
+	Id uint64 `json:"id"`
+
+	// LikeCount いいねの数
+	LikeCount uint64 `json:"like_count"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+
+	// User コメントを投稿したユーザー情報
+	User CommentByUser `json:"user"`
+}
+
+// GetProductCommentViolationsNextCursor defines model for .
+type GetProductCommentViolationsNextCursor struct {
+	// NextCursor 次ページへのカーソル（コメントIDをBase64にエンコードした値）
+	NextCursor string `json:"next_cursor"`
+}
+
+// GetProductCommentViolationsParams defines parameters for GetProductCommentViolations.
+type GetProductCommentViolationsParams struct {
+	// Cursor 次のページの商品コメント違反一覧を取得するためのカーソル。
+	// カーソルはコメントIDをbase64でエンコードした文字列を指定する。
+	Cursor *string `form:"cursor,omitempty" json:"cursor,omitempty"`
+
+	// Limit 取得する商品コメント違反情報数を指定。
+	// デフォルトは10。1度に最大20件まで取得可能。
+	Limit *uint64 `form:"limit,omitempty" json:"limit,omitempty"`
+}
+
 // GetChargeHistoriesParams defines parameters for GetChargeHistories.
 type GetChargeHistoriesParams struct {
 	// Offset 取得を開始する注文のインデックス。最初のページは0を指定。
