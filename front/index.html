@@ -103,6 +103,7 @@
             document.getElementById('post_result').textContent = `投稿成功！コメントID: ${result.id}`;
         }
 
+        <!-- corsエラーになるためOpenSearch直アクセスではなく、API経由で実行できるようにする -->
         async function searchComment() {
             const product_id = document.getElementById('search_product_id').value;
             const comment_id = document.getElementById('search_comment_id').value;
