@@ -1,1 +1,1 @@
-# elasticsearch_demo
+# opensearch_demo
