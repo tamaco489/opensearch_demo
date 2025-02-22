@@ -81,3 +81,59 @@ curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
   }
 }
 ```
+
+3. コメント登録、登録したコメントの検索
+```bash
+# コメント登録
+$ make create-product-comment
+curl -i -sX 'POST' \
+        'http://localhost:8080/shop/v1/products/20010001/comments' \
+        -H 'accept: application/json' \
+        -H 'Content-Type: application/json' \
+        -d '{"title": "思っていた以上に中々良い商品でした。", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
+HTTP/1.1 201 Created
+Content-Type: application/json
+Date: Sat, 22 Feb 2025 19:09:38 GMT
+Content-Length: 16
+
+{"id":70235692}
+
+# 登録したコメントの検索（product_idは適宜変更）
+$ make search-comment-by-product-id-and-comment-id
+curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
+-H 'Content-Type: application/json' \
+-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
+{
+  "took": 7,
+  "timed_out": false,
+  "_shards": {
+    "total": 1,
+    "successful": 1,
+    "skipped": 0,
+    "failed": 0
+  },
+  "hits": {
+    "total": {
+      "value": 1,
+      "relation": "eq"
+    },
+    "max_score": 2,
+    "hits": [
+      {
+        "_index": "product_comments",
+        "_id": "70235692",
+        "_score": 2,
+        "_source": {
+          "id": 70235692,
+          "product_id": 20010001,
+          "user_id": 25540992,
+          "title": "思っていた以上に中々良い商品でした。",
+          "content": "この商品は非常に良いです。特にデザインが素晴らしい。",
+          "rate": 4,
+          "created_at": "2025-02-23 04:09:38"
+        }
+      }
+    ]
+  }
+}
+```
