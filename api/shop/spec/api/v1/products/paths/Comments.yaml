@@ -50,7 +50,7 @@ post:
     - v1
     - products/comments
   summary: 商品に対してのコメント登録API
-  description: 商品に対してコメントを投稿します。
+  description: 商品に対して任意のコメントを投稿します。
   operationId: createProductComment
   parameters:
     - name: productID

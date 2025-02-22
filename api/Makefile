@@ -219,7 +219,7 @@ search-comment-by-product-id-and-created_at-desc:
 search-comment-by-product-id-and-comment-id:
 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
 	-H 'Content-Type: application/json' \
-	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235640" } }]}}}' | jq .
+	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
 
 # データ削除
 .PHONY: delete-all-ops
