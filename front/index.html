@@ -4,19 +4,82 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>コメント投稿・検索</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #0073e6;
+            border-bottom: 2px solid #0073e6;
+            padding-bottom: 5px;
+        }
+
+        label {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        button {
+            background-color: #0073e6;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        #post_result, #search_result {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #e6f2ff;
+            border-left: 4px solid #0073e6;
+            white-space: pre-wrap;
+        }
+    </style>
 </head>
 <body>
     <h2>コメント投稿</h2>
-    <label>商品ID: <input type="number" id="product_id"></label><br>
-    <label>タイトル: <input type="text" id="title"></label><br>
-    <label>内容: <textarea id="content"></textarea></label><br>
-    <label>評価: <input type="number" id="rate" min="1" max="5"></label><br>
+    <label>商品ID: <input type="number" id="product_id"></label>
+    <label>タイトル: <input type="text" id="title"></label>
+    <label>内容: <textarea id="content"></textarea></label>
+    <label>評価: <input type="number" id="rate" min="1" max="5"></label>
     <button onclick="postComment()">投稿</button>
     <p id="post_result"></p>
 
     <h2>コメント検索</h2>
-    <label>商品ID: <input type="number" id="search_product_id"></label><br>
-    <label>コメントID: <input type="number" id="search_comment_id"></label><br>
+    <label>商品ID: <input type="number" id="search_product_id"></label>
+    <label>コメントID: <input type="number" id="search_comment_id"></label>
     <button onclick="searchComment()">検索</button>
     <pre id="search_result"></pre>
 
