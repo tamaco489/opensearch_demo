@@ -1,6 +1,6 @@
 # opensearch_demo
 
-環境立ち上げ（APIサーバ、OpenSearchを起動）
+1. 環境立ち上げ（APIサーバ、OpenSearchを起動）
 ```bash
 $ cd api/shop
 
@@ -17,7 +17,7 @@ $ make logs
 docker compose logs -f shop-api
 ```
 
-OpenSearch インデックス作成、テストデータ投入、商品ID検索
+2. OpenSearch インデックス作成、テストデータ投入、商品ID検索
 ```bash
 $ cd api
 
