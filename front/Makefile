@@ -7,4 +7,3 @@ install-tools:
 
 up:
 	http-server -p 8000
-
