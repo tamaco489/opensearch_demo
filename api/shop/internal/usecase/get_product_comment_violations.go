@@ -32,6 +32,7 @@ func (u productCommentUseCase) GetProductCommentViolations(ctx context.Context, 
 	}
 
 	// NGワードを含む検索クエリを組み立てる
+	// NOTE: 2回目以降のリクエストの場合、cursorの値以降のデータを取得する必要があるため、初回実行と2回目以降の実行とでクエリを区別する必要がある。
 	query := u.buildNGWordsQuery(allNGWords, limit)
 
 	// OpenSearchに検索リクエストを送信
@@ -53,6 +54,7 @@ func (u productCommentUseCase) GetProductCommentViolations(ctx context.Context, 
 	}
 
 	// NOTE: cursorの値は一旦固定値とする
+	// NOTE: 本来は取得したデータの1件分をスライスから除外し、base64エンコードした文字列をクライアントに返す必要がある。
 	nextCursor := gen.GetProductCommentViolationsNextCursor{
 		NextCursor: "NTQwMDk1MzY=",
 	}
