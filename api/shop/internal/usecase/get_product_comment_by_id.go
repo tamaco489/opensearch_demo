@@ -17,16 +17,19 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 
 	documentID := strconv.FormatUint(request.CommentID, 10)
 
-	// NOTE: https: //github.com/opensearch-project/opensearch-go/blob/main/opensearchapi/api_document-get.go
+	// NOTE: https://github.com/opensearch-project/opensearch-go/blob/main/opensearchapi/api_document-get.go
 	documentClient := u.opsApiClient.Document
-	getResult, err := documentClient.Get(ctx, opensearchapi.DocumentGetReq{
-		Index:      entity.ProductComments.String(),
-		DocumentID: documentID,
-	})
+	getResult, err := documentClient.Get(
+		ctx,
+		opensearchapi.DocumentGetReq{
+			Index:      entity.ProductComments.String(),
+			DocumentID: documentID,
+		},
+	)
 	if err != nil {
 		// OpenSearchのレスポンスに "found": false が含まれていた場合、コメントが見つからないので 404エラーを返す
 		if !getResult.Found {
-			slog.ErrorContext(ctx, fmt.Sprintf("failed to get product comment by id: %v", err))
+			slog.ErrorContext(ctx, fmt.Sprintf("not found comment id: %v", err))
 			return gen.GetProductCommentByID404Response{}, nil
 		}
 		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to get product comment by id: %v", err)
