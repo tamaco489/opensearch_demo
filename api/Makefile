@@ -208,7 +208,7 @@ bulk-insert-comments:
 	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
 
 # データ検索
-.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc search-comment-by-product-id-and-comment-id
+.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc doc-comment-by-product-id-and-comment-id
 search-comment-all:
 	curl -sX GET "http://localhost:9200/product_comments/_search?size=50&pretty" | jq .
 
@@ -222,10 +222,14 @@ search-comment-by-product-id-and-created_at-desc:
 		-H 'Content-Type: application/json' \
 		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}' | jq .
 
-search-comment-by-product-id-and-comment-id:
-	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
-	-H 'Content-Type: application/json' \
-	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
+doc-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらの方が効率的）
+	curl -sX GET "http://localhost:9200/product_comments/_doc/70235692?pretty" \
+    -H 'Content-Type: application/json' | jq .
+
+# search-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらは非効率のためコメントアウト）
+# 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
+# 	-H 'Content-Type: application/json' \
+# 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
 
 # データ削除
 .PHONY: delete-all-ops
