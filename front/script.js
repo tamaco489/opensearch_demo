@@ -18,8 +18,6 @@ async function postComment() {
 }
 
 async function getProductCommentByID() {
-  console.log("✅ getProductCommentByID() が実行されました！");
-
   const product_id = document.getElementById('get_product_comment_id').value;
   const comment_id = document.getElementById('get_comment_id').value;
 
