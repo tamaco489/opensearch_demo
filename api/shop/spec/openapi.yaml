@@ -754,7 +754,7 @@ paths:
         - v1
         - admin
         - admin/products/comments/violations
-      summary: 不適切なコメントが投稿の一覧取得API
+      summary: 不適切なコメントの一覧取得API
       description: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
       operationId: getProductCommentViolations
       parameters:
@@ -788,6 +788,35 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Violations'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /v1/admin/products/comments/violations/{commentID}:
+    delete:
+      tags:
+        - v1
+        - admin
+        - admin/products/comments/violations
+      summary: 不適切なコメントの削除API
+      description: 不適切なコメントを削除します。
+      operationId: deleteProductCommentByID
+      parameters:
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 70235692
+      responses:
+        '204':
+          description: 不適切なコメントの削除に成功しました。
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':

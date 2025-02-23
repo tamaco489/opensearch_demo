@@ -3,7 +3,7 @@ get:
     - v1
     - admin
     - admin/products/comments/violations
-  summary: 不適切なコメントが投稿の一覧取得API
+  summary: 不適切なコメントの一覧取得API
   description: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
   operationId: getProductCommentViolations
   parameters:

@@ -18,19 +18,20 @@ api-all-request: healthcheck sleep \
 	delete-credit-card sleep \
 	create-reservations sleep \
 	create-charge sleep \
-	get-charge-histories \
-	get-customer \
-	create-customer \
-	delete-customer \
-	get-product-comments \
-	get-product-comment-by-id \
-	create-product-comment \
-	get-product-my-comment \
-	update-product-my-comment \
-	delete-product-my-comment \
-	create-like-product-comment \
-	delete-like-product-comment \
-	get-product-comment-violations
+	get-charge-histories sleep \
+	get-customer sleep \
+	create-customer sleep \
+	delete-customer sleep \
+	get-product-comments sleep \
+	get-product-comment-by-id sleep \
+	create-product-comment sleep \
+	get-product-my-comment sleep \
+	update-product-my-comment sleep \
+	delete-product-my-comment sleep \
+	create-like-product-comment sleep \
+	delete-like-product-comment sleep \
+	get-violations-comment sleep \
+	delete-violations-comment
 
 # 生存確認API
 .PHONY: healthcheck
@@ -185,11 +186,17 @@ get-charge-histories:
 		-H 'accept: application/json' | jq .
 
 # 管理者系API
-.PHONY: get-product-comment-violations
-get-product-comment-violations:
+.PHONY: get-violations-comment delete-violations-comment
+get-violations-comment:
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/admin/products/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
+
+delete-violations-comment:
+	curl -i -X 'DELETE' \
+		'http://localhost:8080/shop/v1/admin/products/comments/violations/70235692' \
+		-H 'accept: */*'
+
 
 # =================================================================
 # OpenSearch API Request
