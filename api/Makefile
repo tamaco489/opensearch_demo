@@ -23,6 +23,7 @@ api-all-request: healthcheck sleep \
 	create-customer \
 	delete-customer \
 	get-product-comments \
+	get-product-comment-by-id \
 	create-product-comment \
 	get-product-my-comment \
 	update-product-my-comment \
@@ -65,54 +66,59 @@ get-profile-me:
 
 # 商品系API
 .PHONY: get-products get-product-by-id
-get-products:
+get-products: # 商品の一覧情報取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products?cursor=MjAwMDEwMDE%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
-get-product-by-id:
+get-product-by-id: # 商品の詳細情報取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20001001' \
 		-H 'accept: application/json' | jq .
 
 # コメント系API
-get-product-comments:
+get-product-comments: # 商品に対してのコメント一覧取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20010001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
-create-product-comment:
+create-product-comment: # 商品に対してのコメント投稿API
 	curl -i -sX 'POST' \
 		'http://localhost:8080/shop/v1/products/20010001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "思っていた以上に中々良い商品でした。", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
-get-product-my-comment:
+get-product-comment-by-id: # 商品に対しての詳細なコメント取得API
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/products/10001001/comments/54009221' \
+		-H 'accept: application/json' | jq .
+
+get-product-my-comment: # 自身のコメント取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
 
-update-product-my-comment:
+update-product-my-comment: # 自身のコメント更新API
 	curl -i -X 'PUT' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "まずまず商品でした", "content": "価格が少し高いです。", "rate": 3}'
 
-delete-product-my-comment:
+delete-product-my-comment: # 自身のコメント削除API
 	curl -i -X 'DELETE' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*'
 
 # いいね系API
-create-like-product-comment:
+create-like-product-comment: # コメントに対しての「いいね」API
 	curl -i -X 'POST' \
 		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
-delete-like-product-comment:
+delete-like-product-comment: # コメントに対しての「いいね」を取り消すAPI
 	curl -i -X 'DELETE' \
 		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
