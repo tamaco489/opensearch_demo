@@ -18,9 +18,9 @@ type ServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(c *gin.Context)
-	// 商品に関連するコメント違反一覧の取得API
-	// (GET /v1/admin/products/{productID}/comments/violations)
-	GetProductCommentViolations(c *gin.Context, productID uint64, params GetProductCommentViolationsParams)
+	// 不適切なコメントが投稿の一覧取得API
+	// (GET /v1/admin/products/comments/violations)
+	GetProductCommentViolations(c *gin.Context, params GetProductCommentViolationsParams)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
@@ -119,15 +119,6 @@ func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
 
 	var err error
 
-	// ------------- Path parameter "productID" -------------
-	var productID uint64
-
-	err = runtime.BindStyledParameter("simple", false, "productID", c.Param("productID"), &productID)
-	if err != nil {
-		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter productID: %w", err), http.StatusBadRequest)
-		return
-	}
-
 	c.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
@@ -156,7 +147,7 @@ func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.GetProductCommentViolations(c, productID, params)
+	siw.Handler.GetProductCommentViolations(c, params)
 }
 
 // DeleteCustomer operation middleware
@@ -757,7 +748,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	}
 
 	router.GET(options.BaseURL+"/healthcheck", wrapper.Healthcheck)
-	router.GET(options.BaseURL+"/v1/admin/products/:productID/comments/violations", wrapper.GetProductCommentViolations)
+	router.GET(options.BaseURL+"/v1/admin/products/comments/violations", wrapper.GetProductCommentViolations)
 	router.DELETE(options.BaseURL+"/v1/payment/customers", wrapper.DeleteCustomer)
 	router.POST(options.BaseURL+"/v1/payment/customers", wrapper.CreateCustomer)
 	router.GET(options.BaseURL+"/v1/payment/customers/:userID", wrapper.GetCustomerByUserID)
@@ -818,8 +809,7 @@ func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.Respo
 }
 
 type GetProductCommentViolationsRequestObject struct {
-	ProductID uint64 `json:"productID"`
-	Params    GetProductCommentViolationsParams
+	Params GetProductCommentViolationsParams
 }
 
 type GetProductCommentViolationsResponseObject interface {
@@ -1813,8 +1803,8 @@ type StrictServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
-	// 商品に関連するコメント違反一覧の取得API
-	// (GET /v1/admin/products/{productID}/comments/violations)
+	// 不適切なコメントが投稿の一覧取得API
+	// (GET /v1/admin/products/comments/violations)
 	GetProductCommentViolations(ctx *gin.Context, request GetProductCommentViolationsRequestObject) (GetProductCommentViolationsResponseObject, error)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
@@ -1925,10 +1915,9 @@ func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
 }
 
 // GetProductCommentViolations operation middleware
-func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, productID uint64, params GetProductCommentViolationsParams) {
+func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, params GetProductCommentViolationsParams) {
 	var request GetProductCommentViolationsRequestObject
 
-	request.ProductID = productID
 	request.Params = params
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {

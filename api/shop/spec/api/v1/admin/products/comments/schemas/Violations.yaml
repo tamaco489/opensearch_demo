@@ -14,33 +14,29 @@ properties:
         - title
         - content
         - created_at
-        - like_count
         - report_reasons
         - user
+        - product_id
+        - rate
       properties:
         id:
           type: integer
           format: uint64
           description: コメントの一意なID
-          example: 1000001
+          example: 70537001
         title:
           type: string
           description: コメントのタイトル
-          example: "何かを蔑むような不適切なコメントのタイトル"
+          example: "最悪の製品。"
         content:
           type: string
           description: コメントの本文
-          example: "何かを蔑むような不適切なコメントの本文。"
+          example: "まったく使えませんでした。"
         created_at:
           type: string
           format: date-time
           description: コメントの投稿日時（ISO 8601形式, JST）
           example: "2025-02-15T13:45:30+09:00"
-        like_count:
-          type: integer
-          format: uint64
-          description: いいねの数
-          example: 15
         report_reasons:
           type: array
           description: コメントに対して報告された理由
@@ -51,6 +47,18 @@ properties:
             - "inappropriate"
         user:
           $ref: "../../../../products/schemas/CommentByUser.yaml"
+        product_id:
+          type: integer
+          format: uint64
+          description: 商品ID
+          example: 20010001
+        rate:
+          type: integer
+          format: uint32
+          description: 商品に対する評価（1〜5の整数）
+          minimum: 1
+          maximum: 5
+          example: 1
       x-go-type-name: GetProductCommentViolations
   metadata:
     type: object
