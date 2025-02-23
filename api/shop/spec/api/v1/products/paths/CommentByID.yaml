@@ -2,7 +2,7 @@ get:
   tags:
     - v1
     - products/comments
-  summary: 商品に対しての詳細なコメントを取得するAPI
+  summary: 商品に対しての詳細なコメント取得API
   description: 商品に対しての詳細なコメントを取得します。
   operationId: getProductCommentByID
   parameters:

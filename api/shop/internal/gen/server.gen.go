@@ -60,7 +60,7 @@ type ServerInterface interface {
 	// 商品に対してのコメント投稿API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(c *gin.Context, productID uint64)
-	// 商品に対しての詳細なコメントを取得するAPI
+	// 商品に対しての詳細なコメント取得API
 	// (GET /v1/products/{productID}/comments/{commentID})
 	GetProductCommentByID(c *gin.Context, productID uint64, commentID uint64)
 	// コメントに対しての「いいね」を取り消すAPI
@@ -69,13 +69,13 @@ type ServerInterface interface {
 	// コメントに対しての「いいね」API
 	// (POST /v1/products/{productID}/comments/{commentID}/like)
 	CreateLikeProductComment(c *gin.Context, productID uint64, commentID uint64)
-	// 自身のコメント情報削除API
+	// 自身のコメント削除API
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(c *gin.Context, productID uint64, commentID uint64)
-	// 自身のコメント情報取得API
+	// 自身のコメント取得API
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyComment(c *gin.Context, productID uint64, commentID uint64)
-	// 自身のコメント情報更新API
+	// 自身のコメント更新API
 	// (PUT /v1/products/{productID}/users/comments/{commentID})
 	UpdateProductMyComment(c *gin.Context, productID uint64, commentID uint64)
 	// ユーザの新規登録API
@@ -1855,7 +1855,7 @@ type StrictServerInterface interface {
 	// 商品に対してのコメント投稿API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(ctx *gin.Context, request CreateProductCommentRequestObject) (CreateProductCommentResponseObject, error)
-	// 商品に対しての詳細なコメントを取得するAPI
+	// 商品に対しての詳細なコメント取得API
 	// (GET /v1/products/{productID}/comments/{commentID})
 	GetProductCommentByID(ctx *gin.Context, request GetProductCommentByIDRequestObject) (GetProductCommentByIDResponseObject, error)
 	// コメントに対しての「いいね」を取り消すAPI
@@ -1864,13 +1864,13 @@ type StrictServerInterface interface {
 	// コメントに対しての「いいね」API
 	// (POST /v1/products/{productID}/comments/{commentID}/like)
 	CreateLikeProductComment(ctx *gin.Context, request CreateLikeProductCommentRequestObject) (CreateLikeProductCommentResponseObject, error)
-	// 自身のコメント情報削除API
+	// 自身のコメント削除API
 	// (DELETE /v1/products/{productID}/users/comments/{commentID})
 	DeleteProductMyComment(ctx *gin.Context, request DeleteProductMyCommentRequestObject) (DeleteProductMyCommentResponseObject, error)
-	// 自身のコメント情報取得API
+	// 自身のコメント取得API
 	// (GET /v1/products/{productID}/users/comments/{commentID})
 	GetProductMyComment(ctx *gin.Context, request GetProductMyCommentRequestObject) (GetProductMyCommentResponseObject, error)
-	// 自身のコメント情報更新API
+	// 自身のコメント更新API
 	// (PUT /v1/products/{productID}/users/comments/{commentID})
 	UpdateProductMyComment(ctx *gin.Context, request UpdateProductMyCommentRequestObject) (UpdateProductMyCommentResponseObject, error)
 	// ユーザの新規登録API
