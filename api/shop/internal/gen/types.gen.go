@@ -92,12 +92,6 @@ type CommentByID struct {
 	// Id コメントの一意なID
 	Id uint64 `json:"id"`
 
-	// LikeCount いいねの数
-	LikeCount uint64 `json:"like_count"`
-
-	// ReportReasons コメントに対して報告された理由
-	ReportReasons []ReportReason `json:"report_reasons"`
-
 	// Title コメントのタイトル
 	Title string `json:"title"`
 
@@ -111,7 +105,7 @@ type CommentByUser struct {
 	AvatarUrl string `json:"avatar_url"`
 
 	// UserId ユーザーの一意なID
-	UserId int64 `json:"user_id"`
+	UserId uint64 `json:"user_id"`
 
 	// UserName ユーザーの表示名
 	UserName string `json:"user_name"`

@@ -1135,7 +1135,7 @@ components:
       properties:
         user_id:
           type: integer
-          format: int64
+          format: uint64
           description: ユーザーの一意なID
           example: 12345
         user_name:
@@ -1251,8 +1251,6 @@ components:
         - title
         - content
         - created_at
-        - like_count
-        - report_reasons
         - user
       properties:
         id:
@@ -1273,19 +1271,6 @@ components:
           format: date-time
           description: コメントの投稿日時（ISO 8601形式, JST）
           example: '2025-02-15T13:45:30+09:00'
-        like_count:
-          type: integer
-          format: uint64
-          description: いいねの数
-          example: 15
-        report_reasons:
-          type: array
-          description: コメントに対して報告された理由
-          items:
-            $ref: '#/components/schemas/ReportReason'
-          example:
-            - irrelevant
-            - inappropriate
         user:
           $ref: '#/components/schemas/CommentByUser'
     GetMyCommentByIDResponse:

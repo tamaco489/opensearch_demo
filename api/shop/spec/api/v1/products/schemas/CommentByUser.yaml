@@ -8,7 +8,7 @@ description: コメントを投稿したユーザー情報
 properties:
   user_id:
     type: integer
-    format: int64
+    format: uint64
     description: ユーザーの一意なID
     example: 12345
   user_name:
