@@ -477,7 +477,7 @@ type GetProductCommentViolationsParams struct {
 
 	// Limit 取得する商品コメント違反情報数を指定。
 	// デフォルトは10。1度に最大20件まで取得可能。
-	Limit *uint64 `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit *uint32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // GetChargeHistoriesParams defines parameters for GetChargeHistories.

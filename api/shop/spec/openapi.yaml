@@ -776,7 +776,7 @@ paths:
           required: false
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 10
             default: 10
             minimum: 1
