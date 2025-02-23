@@ -60,6 +60,7 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 			AvatarUrl: fmt.Sprintf("https://example.com/users/%d/avatar.jpg", source.UserID), // NOTE: 別途RDS等で管理しているものをuidで取得する
 		},
 		CreatedAt: createdAt,
+		ProductId: source.ProductID,
 		Rate:      uint32(source.Rate),
 	}, nil
 }

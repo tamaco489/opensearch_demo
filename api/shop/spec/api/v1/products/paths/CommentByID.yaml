@@ -13,7 +13,7 @@ get:
       schema:
         type: integer
         format: uint64
-        example: 10001001
+        example: 20010001
     - name: commentID
       in: path
       description: コメントID
@@ -21,7 +21,7 @@ get:
       schema:
         type: integer
         format: uint64
-        example: 54009221
+        example: 70235692
   responses:
     '200':
       description: 詳細なコメントの取得に成功しました。

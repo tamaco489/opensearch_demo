@@ -302,7 +302,7 @@ paths:
           schema:
             type: integer
             format: uint64
-            example: 10001001
+            example: 20010001
         - name: commentID
           in: path
           description: コメントID
@@ -310,7 +310,7 @@ paths:
           schema:
             type: integer
             format: uint64
-            example: 54009221
+            example: 70235692
       responses:
         '200':
           description: 詳細なコメントの取得に成功しました。
@@ -1253,13 +1253,14 @@ components:
         - created_at
         - report_reasons
         - user
+        - product_id
         - rate
       properties:
         id:
           type: integer
           format: uint64
           description: コメントの一意なID
-          example: 54009221
+          example: 70235692
         title:
           type: string
           description: コメントのタイトル
@@ -1283,6 +1284,11 @@ components:
             - inappropriate
         user:
           $ref: '#/components/schemas/CommentByUser'
+        product_id:
+          type: integer
+          format: uint64
+          description: 商品ID
+          example: 20010001
         rate:
           type: integer
           format: uint32
