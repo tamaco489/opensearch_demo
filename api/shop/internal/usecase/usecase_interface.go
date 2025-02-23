@@ -9,7 +9,10 @@ import (
 
 // IProductCommentUseCase は、商品コメントに関するユースケースを提供するインターフェースです。
 type IProductCommentUseCase interface {
-	// ユーザ向けAPI: CreateProductComment（商品に対して任意のコメントを投稿します。）
+	// ユーザ向けAPI: GetProductCommentByID（商品に対しての詳細なコメントを取得します）
+	GetProductCommentByID(ctx context.Context, request gen.GetProductCommentByIDRequestObject) (gen.GetProductCommentByIDResponseObject, error)
+
+	// ユーザ向けAPI: CreateProductComment（商品に対して任意のコメントを投稿します）
 	CreateProductComment(ctx context.Context, request gen.CreateProductCommentRequestObject) (gen.CreateProductCommentResponseObject, error)
 
 	// 管理者向けAPI: GetProductCommentViolations（商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します）
