@@ -234,6 +234,12 @@ doc-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定�
 # 	-H 'Content-Type: application/json' \
 # 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
 
+search-ngword-comment:
+	curl -sX GET "localhost:9200/product_comments/_search?pretty" \
+			-H 'Content-Type: application/json' \
+			-d '{"query": {"bool": {"should": [{ "match_phrase": { "content": "クズ" }}, { "match_phrase": { "content": "ゴミ" }}, { "match_phrase": { "content": "ぶっ潰す" }}, { "match_phrase": { "content": "http://" }}, { "match_phrase": { "content": "https://" }}, { "match_phrase": { "content": "最悪" }}, { "match_phrase": { "title": "クズ" }}, { "match_phrase": { "title": "ゴミ" }}, { "match_phrase": { "title": "ぶっ潰す" }}, { "match_phrase": { "title": "http://" }}, { "match_phrase": { "title": "https://" }}, { "match_phrase": { "title": "最悪" }}], "minimum_should_match": 1}}, "size": 10}' | jq .
+
+
 # データ削除
 .PHONY: delete-all-ops
 delete-all-ops:
