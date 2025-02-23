@@ -4,8 +4,9 @@ required:
   - title
   - content
   - created_at
-  # - report_reasons
+  - report_reasons
   - user
+  - rate
 properties:
   id:
     type: integer
@@ -25,13 +26,20 @@ properties:
     format: date-time
     description: コメントの投稿日時（ISO 8601形式, JST）
     example: "2025-02-15T13:45:30+09:00"
-  # report_reasons:
-  #   type: array
-  #   description: コメントに対して報告された理由
-  #   items:
-  #     $ref: "./ReportReason.yaml"
-  #   example:
-  #     - "irrelevant"
-  #     - "inappropriate"
+  report_reasons:
+    type: array
+    description: コメントに対して報告された理由
+    items:
+      $ref: "./ReportReason.yaml"
+    example:
+      - "irrelevant"
+      - "inappropriate"
   user:
     $ref: "./CommentByUser.yaml"
+  rate:
+    type: integer
+    format: uint32
+    description: 商品に対する評価（1〜5の整数）
+    minimum: 1
+    maximum: 5
+    example: 4

@@ -92,6 +92,12 @@ type CommentByID struct {
 	// Id コメントの一意なID
 	Id uint64 `json:"id"`
 
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
 	// Title コメントのタイトル
 	Title string `json:"title"`
 

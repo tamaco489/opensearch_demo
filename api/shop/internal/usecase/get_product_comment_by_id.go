@@ -50,16 +50,17 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 	}
 
 	return gen.GetProductCommentByID200JSONResponse{
-		Id:      commentID,
-		Title:   source.Title,
-		Content: source.Content,
-		// ReportReasons: []gen.ReportReason{}, // todo: このパラメータの扱い要整理
+		Id:            commentID,
+		Title:         source.Title,
+		Content:       source.Content,
+		ReportReasons: []gen.ReportReason{}, // NOTE: 別途RDS等で管理しているものをuidで取得する
 		User: gen.CommentByUser{
 			UserId:    source.UserID,
 			UserName:  "氷織 羊",                                                                // NOTE: 別途RDS等で管理しているものをuidで取得する
 			AvatarUrl: fmt.Sprintf("https://example.com/users/%d/avatar.jpg", source.UserID), // NOTE: 別途RDS等で管理しているものをuidで取得する
 		},
 		CreatedAt: createdAt,
+		Rate:      uint32(source.Rate),
 	}, nil
 }
 
