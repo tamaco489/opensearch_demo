@@ -91,7 +91,7 @@ create-product-comment: # 商品に対してのコメント投稿API
 
 get-product-comment-by-id: # 商品に対しての詳細なコメント取得API
 	curl -sX 'GET' \
-		'http://localhost:8080/shop/v1/products/10001001/comments/54009221' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/70235692' \
 		-H 'accept: application/json' | jq .
 
 get-product-my-comment: # 自身のコメント取得API
