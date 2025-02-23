@@ -45,3 +45,13 @@ func (ng *NGWords) GetAllNGWords() map[string][]string {
 		"SelfHarmWords":         ng.SelfHarmWords,
 	}
 }
+
+// GetAllNGWordsCombined は全てのNGワードを1つのスライスにまとめて取得するメソッド
+func (ng *NGWords) GetAllNGWordsCombined() []string {
+	allWords := append(ng.HateWords, ng.ViolenceWords...)
+	allWords = append(allWords, ng.SexualHarassmentWords...)
+	allWords = append(allWords, ng.SpamWords...)
+	allWords = append(allWords, ng.FakeInfoWords...)
+	allWords = append(allWords, ng.SelfHarmWords...)
+	return allWords
+}
