@@ -33,5 +33,5 @@ func (u productCommentUseCase) DeleteProductCommentViolationsByID(ctx context.Co
 		return gen.DeleteProductCommentViolationByID500Response{}, err
 	}
 
-	return gen.DeleteProductCommentViolationByID500Response{}, nil
+	return gen.DeleteProductCommentViolationByID204Response{}, nil
 }
