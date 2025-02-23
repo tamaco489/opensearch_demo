@@ -2,8 +2,8 @@ get:
   tags:
     - v1
     - products/comments
-  summary: 商品に対するコメントの詳細な情報を取得するAPI
-  description: 商品に対するコメント詳細の取得API
+  summary: 商品に対しての詳細なコメントを取得するAPI
+  description: 商品に対しての詳細なコメントを取得します。
   operationId: getProductCommentByID
   parameters:
     - name: productID
@@ -24,7 +24,7 @@ get:
         example: 54009221
   responses:
     '200':
-      description: コメント詳細の取得に成功しました。
+      description: 詳細なコメントの取得に成功しました。
       content:
         application/json:
           schema:

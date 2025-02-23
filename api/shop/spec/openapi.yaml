@@ -203,7 +203,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: 商品に関連するコメント一覧の取得API
+      summary: 商品に対してのコメント一覧取得API
       description: 商品に対してのコメント一覧を取得します。
       operationId: getProductComments
       parameters:
@@ -249,7 +249,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: 商品に対してのコメント登録API
+      summary: 商品に対してのコメント投稿API
       description: 商品に対して任意のコメントを投稿します。
       operationId: createProductComment
       parameters:
@@ -291,8 +291,8 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: 商品に対するコメントの詳細な情報を取得するAPI
-      description: 商品に対するコメント詳細の取得API
+      summary: 商品に対しての詳細なコメントを取得するAPI
+      description: 商品に対しての詳細なコメントを取得します。
       operationId: getProductCommentByID
       parameters:
         - name: productID
@@ -313,7 +313,7 @@ paths:
             example: 54009221
       responses:
         '200':
-          description: コメント詳細の取得に成功しました。
+          description: 詳細なコメントの取得に成功しました。
           content:
             application/json:
               schema:

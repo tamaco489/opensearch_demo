@@ -54,13 +54,13 @@ type ServerInterface interface {
 	// 商品の詳細情報取得API
 	// (GET /v1/products/{productID})
 	GetProductByID(c *gin.Context, productID int64)
-	// 商品に関連するコメント一覧の取得API
+	// 商品に対してのコメント一覧取得API
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(c *gin.Context, productID uint64, params GetProductCommentsParams)
-	// 商品に対してのコメント登録API
+	// 商品に対してのコメント投稿API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(c *gin.Context, productID uint64)
-	// 商品に対するコメントの詳細な情報を取得するAPI
+	// 商品に対しての詳細なコメントを取得するAPI
 	// (GET /v1/products/{productID}/comments/{commentID})
 	GetProductCommentByID(c *gin.Context, productID uint64, commentID uint64)
 	// コメントに対しての「いいね」を取り消すAPI
@@ -1849,13 +1849,13 @@ type StrictServerInterface interface {
 	// 商品の詳細情報取得API
 	// (GET /v1/products/{productID})
 	GetProductByID(ctx *gin.Context, request GetProductByIDRequestObject) (GetProductByIDResponseObject, error)
-	// 商品に関連するコメント一覧の取得API
+	// 商品に対してのコメント一覧取得API
 	// (GET /v1/products/{productID}/comments)
 	GetProductComments(ctx *gin.Context, request GetProductCommentsRequestObject) (GetProductCommentsResponseObject, error)
-	// 商品に対してのコメント登録API
+	// 商品に対してのコメント投稿API
 	// (POST /v1/products/{productID}/comments)
 	CreateProductComment(ctx *gin.Context, request CreateProductCommentRequestObject) (CreateProductCommentResponseObject, error)
-	// 商品に対するコメントの詳細な情報を取得するAPI
+	// 商品に対しての詳細なコメントを取得するAPI
 	// (GET /v1/products/{productID}/comments/{commentID})
 	GetProductCommentByID(ctx *gin.Context, request GetProductCommentByIDRequestObject) (GetProductCommentByIDResponseObject, error)
 	// コメントに対しての「いいね」を取り消すAPI
