@@ -196,16 +196,19 @@ get-product-comment-violations:
 # =================================================================
 # インデックス作成・削除
 .PHONY: create-product-comments-index delete-product-comments-index
-create-product-comments-index:
+create-product-comments-index: # インデックス作成
 	curl -i -X PUT "http://localhost:9200/product_comments" -H 'Content-Type: application/json' -d @./local/opensearch/product_comments_index.json
 
-delete-product-comments-index:
+delete-product-comments-index: # インデックス削除
 	curl -i -X DELETE "http://localhost:9200/product_comments"
 
-# データ投入
-.PHONY: bulk-insert-comments
-bulk-insert-comments:
+# データ投入、全件カウント
+.PHONY: bulk-insert-comments count-data
+bulk-insert-comments: # データ投入
 	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
+
+count-data: # 全件カウント
+	curl -sX GET "http://localhost:9200/product_comments/_count?pretty"
 
 # データ検索
 .PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc doc-comment-by-product-id-and-comment-id
