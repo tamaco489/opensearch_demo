@@ -18,9 +18,12 @@ type ServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(c *gin.Context)
-	// 不適切なコメントが投稿の一覧取得API
+	// 不適切なコメントの一覧取得API
 	// (GET /v1/admin/products/comments/violations)
 	GetProductCommentViolations(c *gin.Context, params GetProductCommentViolationsParams)
+	// 不適切なコメントの削除API
+	// (DELETE /v1/admin/products/comments/violations/{commentID})
+	DeleteProductCommentByID(c *gin.Context, commentID uint64)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
@@ -148,6 +151,32 @@ func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
 	}
 
 	siw.Handler.GetProductCommentViolations(c, params)
+}
+
+// DeleteProductCommentByID operation middleware
+func (siw *ServerInterfaceWrapper) DeleteProductCommentByID(c *gin.Context) {
+
+	var err error
+
+	// ------------- Path parameter "commentID" -------------
+	var commentID uint64
+
+	err = runtime.BindStyledParameter("simple", false, "commentID", c.Param("commentID"), &commentID)
+	if err != nil {
+		siw.ErrorHandler(c, fmt.Errorf("Invalid format for parameter commentID: %w", err), http.StatusBadRequest)
+		return
+	}
+
+	c.Set(BearerAuthScopes, []string{})
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.DeleteProductCommentByID(c, commentID)
 }
 
 // DeleteCustomer operation middleware
@@ -749,6 +778,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 
 	router.GET(options.BaseURL+"/healthcheck", wrapper.Healthcheck)
 	router.GET(options.BaseURL+"/v1/admin/products/comments/violations", wrapper.GetProductCommentViolations)
+	router.DELETE(options.BaseURL+"/v1/admin/products/comments/violations/:commentID", wrapper.DeleteProductCommentByID)
 	router.DELETE(options.BaseURL+"/v1/payment/customers", wrapper.DeleteCustomer)
 	router.POST(options.BaseURL+"/v1/payment/customers", wrapper.CreateCustomer)
 	router.GET(options.BaseURL+"/v1/payment/customers/:userID", wrapper.GetCustomerByUserID)
@@ -849,6 +879,50 @@ func (response GetProductCommentViolations404Response) VisitGetProductCommentVio
 type GetProductCommentViolations500Response = InternalServerErrorResponse
 
 func (response GetProductCommentViolations500Response) VisitGetProductCommentViolationsResponse(w http.ResponseWriter) error {
+	w.WriteHeader(500)
+	return nil
+}
+
+type DeleteProductCommentByIDRequestObject struct {
+	CommentID uint64 `json:"commentID"`
+}
+
+type DeleteProductCommentByIDResponseObject interface {
+	VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error
+}
+
+type DeleteProductCommentByID204Response struct {
+}
+
+func (response DeleteProductCommentByID204Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(204)
+	return nil
+}
+
+type DeleteProductCommentByID401Response = UnauthorizedResponse
+
+func (response DeleteProductCommentByID401Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(401)
+	return nil
+}
+
+type DeleteProductCommentByID403Response = ForbiddenResponse
+
+func (response DeleteProductCommentByID403Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(403)
+	return nil
+}
+
+type DeleteProductCommentByID404Response = NotFoundResponse
+
+func (response DeleteProductCommentByID404Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+	w.WriteHeader(404)
+	return nil
+}
+
+type DeleteProductCommentByID500Response = InternalServerErrorResponse
+
+func (response DeleteProductCommentByID500Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(500)
 	return nil
 }
@@ -1803,9 +1877,12 @@ type StrictServerInterface interface {
 	// ヘルスチェックAPI
 	// (GET /healthcheck)
 	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
-	// 不適切なコメントが投稿の一覧取得API
+	// 不適切なコメントの一覧取得API
 	// (GET /v1/admin/products/comments/violations)
 	GetProductCommentViolations(ctx *gin.Context, request GetProductCommentViolationsRequestObject) (GetProductCommentViolationsResponseObject, error)
+	// 不適切なコメントの削除API
+	// (DELETE /v1/admin/products/comments/violations/{commentID})
+	DeleteProductCommentByID(ctx *gin.Context, request DeleteProductCommentByIDRequestObject) (DeleteProductCommentByIDResponseObject, error)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(ctx *gin.Context, request DeleteCustomerRequestObject) (DeleteCustomerResponseObject, error)
@@ -1934,6 +2011,33 @@ func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, params Ge
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(GetProductCommentViolationsResponseObject); ok {
 		if err := validResponse.VisitGetProductCommentViolationsResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// DeleteProductCommentByID operation middleware
+func (sh *strictHandler) DeleteProductCommentByID(ctx *gin.Context, commentID uint64) {
+	var request DeleteProductCommentByIDRequestObject
+
+	request.CommentID = commentID
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.DeleteProductCommentByID(ctx, request.(DeleteProductCommentByIDRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "DeleteProductCommentByID")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(DeleteProductCommentByIDResponseObject); ok {
+		if err := validResponse.VisitDeleteProductCommentByIDResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {

@@ -91,3 +91,5 @@ paths:
   # 管理者系API
   /v1/admin/products/comments/violations:
     $ref: './api/v1/admin/products/comments/paths/Violations.yaml'
+  /v1/admin/products/comments/violations/{commentID}:
+    $ref: './api/v1/admin/products/comments/paths/ViolationsByCommentID.yaml'
