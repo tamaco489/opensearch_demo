@@ -20,3 +20,20 @@ func ToProductCommentEntity(request gen.CreateProductCommentRequestObject, comme
 		request.Body.Rate,
 	)
 }
+
+// ToProductCommentResponse はエンティティを API レスポンス形式に変換する
+// func ToProductCommentResponse(comment *entity.ProductComment) gen.GetProductCommentByID200JSONResponse {
+// 	return gen.GetProductCommentByID200JSONResponse{
+// 		Id:            comment.ID,
+// 		Title:         comment.Title,
+// 		Content:       comment.Content,
+// 		ReportReasons: []gen.ReportReason{}, // NOTE: 別途取得する場合は適宜修正
+// 		User: gen.CommentByUser{
+// 			UserId:    comment.UserID,
+// 			UserName:  "氷織 羊", // NOTE: 別途RDS等で管理しているものを取得する
+// 			AvatarUrl: fmt.Sprintf("https://example.com/users/%d/avatar.jpg", comment.UserID),
+// 		},
+// 		CreatedAt: comment.CreatedAt,
+// 		Rate:      comment.Rate,
+// 	}
+// }
