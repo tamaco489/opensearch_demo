@@ -17,11 +17,22 @@ import (
 // GetProductCommentViolations: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
 func (u productCommentUseCase) GetProductCommentViolations(ctx context.Context, request gen.GetProductCommentViolationsRequestObject) (gen.GetProductCommentViolationsResponseObject, error) {
 
+	// NGワードを取得
 	n := ngwords.NewNGWords()
 	allNGWords := n.GetAllNGWordsCombined()
 
+	// limitの値を設定、リクエストに指定がない場合はデフォルト値として10件を取得
+	// cursorで次のデータのcomment_idを返す必要があるため、取得件数+1の値で検索を行う。※余分な1件分のデータはスライスから除外した状態でクライアントに返却する
+	const defaultLimit = 10
+	var limit uint32
+	if request.Params.Limit != nil && *request.Params.Limit != 0 {
+		limit = *request.Params.Limit + 1
+	} else {
+		limit = defaultLimit + 1
+	}
+
 	// NGワードを含む検索クエリを組み立てる
-	query := u.buildNGWordsQuery(allNGWords)
+	query := u.buildNGWordsQuery(allNGWords, limit)
 
 	// OpenSearchに検索リクエストを送信
 	searchResult, err := u.opsApiClient.Search(
@@ -55,17 +66,20 @@ func (u productCommentUseCase) GetProductCommentViolations(ctx context.Context, 
 }
 
 // buildNGWordsQuery: 与えられたNGワードを使ってOpenSearchの検索クエリを構築する関数。
-// それぞれのNGワードに対して、商品コメントの「content」と「title」フィールドを検索し、
-// 該当するものを取得するためのboolクエリを組み立てます。
+//
+// それぞれのNGワードに対して、商品コメントの「content」と「title」フィールドを検索し、該当するものを取得するためのboolクエリを組み立てます。
+//
+// また、検索結果の最大件数（size）を動的に設定できるようにします。
 //
 // Args:
 //
 //	ngWords []string: NGワードのリスト。これらのワードを商品コメントの「content」および「title」に対して検索します。
+//	size int: 取得する最大件数。
 //
 // Returns:
 //
 //	*strings.Reader: 組み立てた検索クエリを格納したReaderオブジェクト。これをOpenSearchの検索リクエストのボディとして使用します。
-func (u productCommentUseCase) buildNGWordsQuery(ngWords []string) *strings.Reader {
+func (u productCommentUseCase) buildNGWordsQuery(ngWords []string, size uint32) *strings.Reader {
 	// "should"句に含める検索条件を格納するスライス
 	var shouldClauses []string
 
@@ -83,8 +97,8 @@ func (u productCommentUseCase) buildNGWordsQuery(ngWords []string) *strings.Read
 				"minimum_should_match": 1            // 1つ以上の条件に一致すればマッチとみなす
 			}
 		},
-		"size": 10                                  // 最大で10件の結果を返す
-	}`, strings.Join(shouldClauses, ","))
+		"size": %d                                 // 最大で指定された件数の結果を返す
+	}`, strings.Join(shouldClauses, ","), size)
 
 	// 構築したクエリ文字列をstrings.Readerに変換して返す
 	return strings.NewReader(queryString)
