@@ -188,7 +188,7 @@ get-charge-histories:
 .PHONY: get-product-comment-violations
 get-product-comment-violations:
 	curl -sX 'GET' \
-		'http://localhost:8080/shop/v1/admin/products/10001001/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
+		'http://localhost:8080/shop/v1/admin/products/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
 # =================================================================
