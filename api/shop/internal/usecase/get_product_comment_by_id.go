@@ -2,34 +2,74 @@ package usecase
 
 import (
 	"context"
+	"encoding/json"
+	"fmt"
+	"log"
+	"strconv"
 	"time"
 
+	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/domain/entity"
 	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, request gen.GetProductCommentByIDRequestObject) (gen.GetProductCommentByIDResponseObject, error) {
 
-	// NOTE: 大量の商品データ、及びコメントデータを取得する想定とし、1500ms(1.5秒) 遅延させる。
-	time.Sleep(1500 * time.Millisecond)
+	documentID := strconv.FormatUint(request.CommentID, 10)
+	documentClient := u.opsApiClient.Document
+	getResult, err := documentClient.Get(ctx, opensearchapi.DocumentGetReq{
+		Index:      entity.ProductComments.String(),
+		DocumentID: documentID,
+	})
+	if err != nil {
+		return nil, err
+	}
 
-	// NOTE: OpenSearchによる商品情報の取得処理が実装されるまでは一旦固定値を返す。
+	var res opensearchapi.DocumentGetResp
+	if err := json.NewDecoder(getResult.Inspect().Response.Body).Decode(&res); err != nil {
+		return nil, fmt.Errorf("failed to decode response: %w", err)
+	}
 
-	jst := time.FixedZone("JST", 9*60*60)
+	log.Println("[INFO] 成功 resp.ID:", res.ID)
+
+	var source ProductCommentSource
+	if err := json.Unmarshal(res.Source, &source); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal source: %w", err)
+	}
+
+	log.Printf("[INFO] 成功 resp.Source: %+v", source)
+
+	commentID, err := strconv.ParseUint(res.ID, 10, 64)
+	if err != nil {
+		return nil, err
+	}
+
+	createdAt, err := time.Parse("2006-01-02 15:04:05", source.CreatedAt)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse CreatedAt: %w", err)
+	}
 
 	return gen.GetProductCommentByID200JSONResponse{
-		Id:        request.CommentID,
-		Title:     "とても良い商品です",
-		Content:   "この商品は非常に良いです。特にデザインが素晴らしい。",
-		CreatedAt: time.Date(2025, 2, 15, 13, 45, 30, 0, jst),
-		LikeCount: 15,
-		ReportReasons: []gen.ReportReason{
-			gen.Inappropriate,
-			gen.Irrelevant,
-		},
+		Id:      commentID,
+		Title:   source.Title,
+		Content: source.Content,
+		// ReportReasons: []gen.ReportReason{}, // todo: このパラメータの扱い要整理
 		User: gen.CommentByUser{
-			UserId:    12345,
-			UserName:  "氷織 羊",
-			AvatarUrl: "https://example.com/avatar.jpg",
+			UserId:    source.UserID,
+			UserName:  "氷織 羊",                                                                // NOTE: 別途RDS等で管理しているものをuidで取得する
+			AvatarUrl: fmt.Sprintf("https://example.com/users/%d/avatar.jpg", source.UserID), // NOTE: 別途RDS等で管理しているものをuidで取得する
 		},
+		CreatedAt: createdAt,
 	}, nil
+}
+
+// レスポンス用の構造体を定義
+type ProductCommentSource struct {
+	ID        uint64 `json:"id"`
+	ProductID uint64 `json:"product_id"`
+	UserID    uint64 `json:"user_id"`
+	Title     string `json:"title"`
+	Content   string `json:"content"`
+	Rate      int    `json:"rate"`
+	CreatedAt string `json:"created_at"`
 }
