@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 // GetProductCommentViolations は商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。

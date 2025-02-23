@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 func (c *Controllers) GetProductByID(ctx *gin.Context, request gen.GetProductByIDRequestObject) (gen.GetProductByIDResponseObject, error) {

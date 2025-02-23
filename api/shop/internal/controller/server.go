@@ -6,10 +6,10 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/logger"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/library/open_search"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/configuration"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/library/logger"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/library/open_search"
 )
 
 func NewHShopAPIServer() (*http.Server, error) {

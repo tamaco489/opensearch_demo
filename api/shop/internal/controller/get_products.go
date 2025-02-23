@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 func (c *Controllers) GetProducts(ctx *gin.Context, request gen.GetProductsRequestObject) (gen.GetProductsResponseObject, error) {

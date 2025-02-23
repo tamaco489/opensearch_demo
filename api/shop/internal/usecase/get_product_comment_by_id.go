@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, request gen.GetProductCommentByIDRequestObject) (gen.GetProductCommentByIDResponseObject, error) {

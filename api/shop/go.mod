@@ -1,4 +1,4 @@
-module github.com/tamaco489/elasticsearch_demo/api/shop
+module github.com/tamaco489/opensearch_demo/api/shop
 
 go 1.23.1
 

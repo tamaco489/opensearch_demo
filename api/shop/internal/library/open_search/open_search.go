@@ -4,7 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/opensearch-project/opensearch-go/v4"
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/configuration"
 
 	requestsigner "github.com/opensearch-project/opensearch-go/v4/signer/awsv2"
 )

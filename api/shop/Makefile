@@ -66,4 +66,4 @@ go-doc:
 	@echo "Starting godoc server..."
 	@godoc -http=:6060 &
 	@echo "Godoc server started at http://localhost:6060"
-	@echo "Open your browser to http://localhost:6060/pkg/github.com/tamaco489/elasticsearch_demo/api/shop/controller/"
+	@echo "Open your browser to http://localhost:6060/pkg/github.com/tamaco489/opensearch_demo/api/shop/controller/"

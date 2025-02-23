@@ -10,8 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/configuration"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/controller"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/configuration"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/controller"
 )
 
 func main() {

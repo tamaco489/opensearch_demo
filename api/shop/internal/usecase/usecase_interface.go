@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 // IProductCommentUseCase は、商品コメントに関するユースケースを提供するインターフェースです。
