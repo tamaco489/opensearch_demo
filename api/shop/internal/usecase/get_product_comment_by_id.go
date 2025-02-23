@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"strconv"
 	"time"
 
@@ -16,6 +15,8 @@ import (
 func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, request gen.GetProductCommentByIDRequestObject) (gen.GetProductCommentByIDResponseObject, error) {
 
 	documentID := strconv.FormatUint(request.CommentID, 10)
+
+	// NOTE: https: //github.com/opensearch-project/opensearch-go/blob/main/opensearchapi/api_document-get.go
 	documentClient := u.opsApiClient.Document
 	getResult, err := documentClient.Get(ctx, opensearchapi.DocumentGetReq{
 		Index:      entity.ProductComments.String(),
@@ -30,20 +31,18 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
 
-	log.Println("[INFO] 成功 resp.ID:", res.ID)
-
 	var source entity.ProductComment
 	if err := json.Unmarshal(res.Source, &source); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal source: %w", err)
 	}
 
-	log.Printf("[INFO] 成功 resp.Source: %+v", source)
-
+	// comment_id を string → uint64に変換
 	commentID, err := strconv.ParseUint(res.ID, 10, 64)
 	if err != nil {
 		return nil, err
 	}
 
+	// created_at をtime.Time型に変換
 	createdAt, err := time.Parse("2006-01-02 15:04:05", source.CreatedAt)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse CreatedAt: %w", err)
