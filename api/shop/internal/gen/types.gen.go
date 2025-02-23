@@ -81,13 +81,40 @@ type ChargeHistoriesLimitOffset struct {
 	TotalCount int `json:"total_count"`
 }
 
+// CommentByID defines model for CommentByID.
+type CommentByID struct {
+	// Content コメントの本文
+	Content string `json:"content"`
+
+	// CreatedAt コメントの投稿日時（ISO 8601形式, JST）
+	CreatedAt time.Time `json:"created_at"`
+
+	// Id コメントの一意なID
+	Id uint64 `json:"id"`
+
+	// ProductId 商品ID
+	ProductId uint64 `json:"product_id"`
+
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
+
+	// ReportReasons コメントに対して報告された理由
+	ReportReasons []ReportReason `json:"report_reasons"`
+
+	// Title コメントのタイトル
+	Title string `json:"title"`
+
+	// User コメントを投稿したユーザー情報
+	User CommentByUser `json:"user"`
+}
+
 // CommentByUser コメントを投稿したユーザー情報
 type CommentByUser struct {
 	// AvatarUrl ユーザーのアバター画像URL
 	AvatarUrl string `json:"avatar_url"`
 
 	// UserId ユーザーの一意なID
-	UserId int64 `json:"user_id"`
+	UserId uint64 `json:"user_id"`
 
 	// UserName ユーザーの表示名
 	UserName string `json:"user_name"`

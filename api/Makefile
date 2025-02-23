@@ -23,6 +23,7 @@ api-all-request: healthcheck sleep \
 	create-customer \
 	delete-customer \
 	get-product-comments \
+	get-product-comment-by-id \
 	create-product-comment \
 	get-product-my-comment \
 	update-product-my-comment \
@@ -65,54 +66,59 @@ get-profile-me:
 
 # 商品系API
 .PHONY: get-products get-product-by-id
-get-products:
+get-products: # 商品の一覧情報取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products?cursor=MjAwMDEwMDE%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
-get-product-by-id:
+get-product-by-id: # 商品の詳細情報取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20001001' \
 		-H 'accept: application/json' | jq .
 
 # コメント系API
-get-product-comments:
+get-product-comments: # 商品に対してのコメント一覧取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20010001/comments?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
-create-product-comment:
+create-product-comment: # 商品に対してのコメント投稿API
 	curl -i -sX 'POST' \
 		'http://localhost:8080/shop/v1/products/20010001/comments' \
 		-H 'accept: application/json' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "思っていた以上に中々良い商品でした。", "content": "この商品は非常に良いです。特にデザインが素晴らしい。", "rate": 4}'
 
-get-product-my-comment:
+get-product-comment-by-id: # 商品に対しての詳細なコメント取得API
+	curl -sX 'GET' \
+		'http://localhost:8080/shop/v1/products/20010001/comments/70235692' \
+		-H 'accept: application/json' | jq .
+
+get-product-my-comment: # 自身のコメント取得API
 	curl -sX 'GET' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: application/json' | jq .
 
-update-product-my-comment:
+update-product-my-comment: # 自身のコメント更新API
 	curl -i -X 'PUT' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*' \
 		-H 'Content-Type: application/json' \
 		-d '{"title": "まずまず商品でした", "content": "価格が少し高いです。", "rate": 3}'
 
-delete-product-my-comment:
+delete-product-my-comment: # 自身のコメント削除API
 	curl -i -X 'DELETE' \
 		'http://localhost:8080/shop/v1/products/20010001/users/comments/54009221' \
 		-H 'accept: */*'
 
 # いいね系API
-create-like-product-comment:
+create-like-product-comment: # コメントに対しての「いいね」API
 	curl -i -X 'POST' \
 		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
 		-d ''
 
-delete-like-product-comment:
+delete-like-product-comment: # コメントに対しての「いいね」を取り消すAPI
 	curl -i -X 'DELETE' \
 		'http://localhost:8080/shop/v1/products/20010001/comments/54009221/like' \
 		-H 'accept: */*' \
@@ -202,7 +208,7 @@ bulk-insert-comments:
 	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
 
 # データ検索
-.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc search-comment-by-product-id-and-comment-id
+.PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc doc-comment-by-product-id-and-comment-id
 search-comment-all:
 	curl -sX GET "http://localhost:9200/product_comments/_search?size=50&pretty" | jq .
 
@@ -216,10 +222,14 @@ search-comment-by-product-id-and-created_at-desc:
 		-H 'Content-Type: application/json' \
 		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}' | jq .
 
-search-comment-by-product-id-and-comment-id:
-	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
-	-H 'Content-Type: application/json' \
-	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
+doc-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらの方が効率的）
+	curl -sX GET "http://localhost:9200/product_comments/_doc/70235709?pretty" \
+    -H 'Content-Type: application/json' | jq .
+
+# search-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらは非効率のためコメントアウト）
+# 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
+# 	-H 'Content-Type: application/json' \
+# 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
 
 # データ削除
 .PHONY: delete-all-ops

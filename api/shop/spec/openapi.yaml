@@ -203,7 +203,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: 商品に関連するコメント一覧の取得API
+      summary: 商品に対してのコメント一覧取得API
       description: 商品に対してのコメント一覧を取得します。
       operationId: getProductComments
       parameters:
@@ -249,7 +249,7 @@ paths:
       tags:
         - v1
         - products/comments
-      summary: 商品に対してのコメント登録API
+      summary: 商品に対してのコメント投稿API
       description: 商品に対して任意のコメントを投稿します。
       operationId: createProductComment
       parameters:
@@ -286,12 +286,52 @@ paths:
           $ref: '#/components/responses/AlreadyExists'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/products/{productID}/comments/{commentID}:
+    get:
+      tags:
+        - v1
+        - products/comments
+      summary: 商品に対しての詳細なコメント取得API
+      description: 商品に対しての詳細なコメントを取得します。
+      operationId: getProductCommentByID
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 20010001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 70235692
+      responses:
+        '200':
+          description: 詳細なコメントの取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentByID'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/products/{productID}/users/comments/{commentID}:
     get:
       tags:
         - v1
         - products/users/comments
-      summary: 自身のコメント情報取得API
+      summary: 自身のコメント取得API
       description: 指定した商品情報に対する自身のコメント情報を取得する
       operationId: getProductMyComment
       parameters:
@@ -330,7 +370,7 @@ paths:
       tags:
         - v1
         - products/users/comments
-      summary: 自身のコメント情報更新API
+      summary: 自身のコメント更新API
       description: 指定した商品情報に対するコメントを更新する
       operationId: updateProductMyComment
       parameters:
@@ -371,7 +411,7 @@ paths:
       tags:
         - v1
         - products/users/comments
-      summary: 自身のコメント情報削除API
+      summary: 自身のコメント削除API
       description: 指定した商品情報に対するコメントを削除する
       operationId: deleteProductMyComment
       parameters:
@@ -1095,7 +1135,7 @@ components:
       properties:
         user_id:
           type: integer
-          format: int64
+          format: uint64
           description: ユーザーの一意なID
           example: 12345
         user_name:
@@ -1204,6 +1244,58 @@ components:
           format: uint64
           description: 投稿したコメントID
           example: 70235591
+    CommentByID:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - created_at
+        - report_reasons
+        - user
+        - product_id
+        - rate
+      properties:
+        id:
+          type: integer
+          format: uint64
+          description: コメントの一意なID
+          example: 70235692
+        title:
+          type: string
+          description: コメントのタイトル
+          example: とても良い商品です
+        content:
+          type: string
+          description: コメントの本文
+          example: この商品は非常に良いです。特にデザインが素晴らしい。
+        created_at:
+          type: string
+          format: date-time
+          description: コメントの投稿日時（ISO 8601形式, JST）
+          example: '2025-02-15T13:45:30+09:00'
+        report_reasons:
+          type: array
+          description: コメントに対して報告された理由
+          items:
+            $ref: '#/components/schemas/ReportReason'
+          example:
+            - irrelevant
+            - inappropriate
+        user:
+          $ref: '#/components/schemas/CommentByUser'
+        product_id:
+          type: integer
+          format: uint64
+          description: 商品ID
+          example: 20010001
+        rate:
+          type: integer
+          format: uint32
+          description: 商品に対する評価（1〜5の整数）
+          minimum: 1
+          maximum: 5
+          example: 4
     GetMyCommentByIDResponse:
       type: object
       required:

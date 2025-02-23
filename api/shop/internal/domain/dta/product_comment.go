@@ -1,8 +1,8 @@
 package dta
 
 import (
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/entity"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/domain/entity"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 // DTA: Data Transfer Adapter

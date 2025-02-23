@@ -17,30 +17,42 @@ async function postComment() {
   document.getElementById('post_result').textContent = `投稿成功！コメントID: ${result.id}`;
 }
 
-// corsエラーになるためOpenSearch直アクセスではなく、API経由で実行できるようにする
-async function searchComment() {
-  const product_id = document.getElementById('search_product_id').value;
-  const comment_id = document.getElementById('search_comment_id').value;
+async function getProductCommentByID() {
+  const product_id = document.getElementById('get_product_comment_id').value;
+  const comment_id = document.getElementById('get_comment_id').value;
 
-  const query = {
-      query: {
-          bool: {
-              must: [
-                  { match: { product_id: Number(product_id) } },
-                  { term: { _id: comment_id } }
-              ]
-          }
-      }
-  };
+  console.log(`📝 取得した商品ID: ${product_id}`);
+  console.log(`📝 取得したコメントID: ${comment_id}`);
 
-  const response = await fetch("http://localhost:9200/product_comments/_search?pretty", {
-      method: 'POST',
+  if (!product_id || !comment_id) {
+    console.error("⚠️ 商品IDとコメントIDが空です！");
+    document.getElementById('get_comment_result').textContent = "商品IDとコメントIDを入力してください。";
+    return;
+  }
+
+  const url = `http://localhost:8080/shop/v1/products/${product_id}/comments/${comment_id}`;
+  console.log(`📡 送信するリクエストURL: ${url}`);
+
+  try {
+    const response = await fetch(url, {
+      method: 'GET',
       headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(query)
-  });
+        'Accept': 'application/json'
+      }
+    });
 
-  const result = await response.json();
-  document.getElementById('search_result').textContent = JSON.stringify(result, null, 2);
+    console.log(`📡 HTTPステータスコード: ${response.status}`);
+
+    if (!response.ok) {
+      throw new Error(`HTTPエラー: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log("✅ API レスポンス:", result);
+
+    document.getElementById('get_comment_result').textContent = JSON.stringify(result, null, 2);
+  } catch (error) {
+    console.error("❌ エラー:", error);
+    document.getElementById('get_comment_result').textContent = `エラー: ${error.message}`;
+  }
 }

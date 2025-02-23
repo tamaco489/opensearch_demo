@@ -2,7 +2,7 @@ package controller
 
 import (
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/usecase"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/usecase"
 )
 
 type Controllers struct {

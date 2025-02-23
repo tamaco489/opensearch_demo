@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/dta"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/domain/entity"
-	"github.com/tamaco489/elasticsearch_demo/api/shop/internal/gen"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/domain/dta"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/domain/entity"
+	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
 // CreateProductComment は商品に対して任意のコメントを投稿します。
