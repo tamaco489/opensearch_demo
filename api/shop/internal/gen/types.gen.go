@@ -453,8 +453,11 @@ type GetProductCommentViolations struct {
 	// Id コメントの一意なID
 	Id uint64 `json:"id"`
 
-	// LikeCount いいねの数
-	LikeCount uint64 `json:"like_count"`
+	// ProductId 商品ID
+	ProductId uint64 `json:"product_id"`
+
+	// Rate 商品に対する評価（1〜5の整数）
+	Rate uint32 `json:"rate"`
 
 	// ReportReasons コメントに対して報告された理由
 	ReportReasons []ReportReason `json:"report_reasons"`
@@ -474,7 +477,7 @@ type GetProductCommentViolationsParams struct {
 
 	// Limit 取得する商品コメント違反情報数を指定。
 	// デフォルトは10。1度に最大20件まで取得可能。
-	Limit *uint64 `form:"limit,omitempty" json:"limit,omitempty"`
+	Limit *uint32 `form:"limit,omitempty" json:"limit,omitempty"`
 }
 
 // GetChargeHistoriesParams defines parameters for GetChargeHistories.

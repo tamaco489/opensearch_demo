@@ -188,7 +188,7 @@ get-charge-histories:
 .PHONY: get-product-comment-violations
 get-product-comment-violations:
 	curl -sX 'GET' \
-		'http://localhost:8080/shop/v1/admin/products/10001001/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
+		'http://localhost:8080/shop/v1/admin/products/comments/violations?cursor=NTQwMDkwMTI%3D&limit=10' \
 		-H 'accept: application/json' | jq .
 
 # =================================================================
@@ -196,16 +196,19 @@ get-product-comment-violations:
 # =================================================================
 # インデックス作成・削除
 .PHONY: create-product-comments-index delete-product-comments-index
-create-product-comments-index:
+create-product-comments-index: # インデックス作成
 	curl -i -X PUT "http://localhost:9200/product_comments" -H 'Content-Type: application/json' -d @./local/opensearch/product_comments_index.json
 
-delete-product-comments-index:
+delete-product-comments-index: # インデックス削除
 	curl -i -X DELETE "http://localhost:9200/product_comments"
 
-# データ投入
-.PHONY: bulk-insert-comments
-bulk-insert-comments:
+# データ投入、全件カウント
+.PHONY: bulk-insert-comments count-data
+bulk-insert-comments: # データ投入
 	curl -sX POST "http://localhost:9200/_bulk" -H "Content-Type: application/json" --data-binary @./local/opensearch/bulk_data.json
+
+count-data: # 全件カウント
+	curl -sX GET "http://localhost:9200/product_comments/_count?pretty"
 
 # データ検索
 .PHONY: search-comment-all search-comment-by-product-id search-comment-by-product-id-and-created_at-desc doc-comment-by-product-id-and-comment-id
@@ -230,6 +233,12 @@ doc-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定�
 # 	curl -sX GET "http://localhost:9200/product_comments/_search?pretty" \
 # 	-H 'Content-Type: application/json' \
 # 	-d '{"query": {"bool": {"must": [{ "match": { "product_id": 20010001 } }, { "term": { "_id": "70235692" } }]}}}' | jq .
+
+search-ngword-comment:
+	curl -sX GET "localhost:9200/product_comments/_search?pretty" \
+			-H 'Content-Type: application/json' \
+			-d '{"query": {"bool": {"should": [{ "match_phrase": { "content": "クズ" }}, { "match_phrase": { "content": "ゴミ" }}, { "match_phrase": { "content": "ぶっ潰す" }}, { "match_phrase": { "content": "http://" }}, { "match_phrase": { "content": "https://" }}, { "match_phrase": { "content": "最悪" }}, { "match_phrase": { "title": "クズ" }}, { "match_phrase": { "title": "ゴミ" }}, { "match_phrase": { "title": "ぶっ潰す" }}, { "match_phrase": { "title": "http://" }}, { "match_phrase": { "title": "https://" }}, { "match_phrase": { "title": "最悪" }}], "minimum_should_match": 1}}, "size": 10}' | jq .
+
 
 # データ削除
 .PHONY: delete-all-ops

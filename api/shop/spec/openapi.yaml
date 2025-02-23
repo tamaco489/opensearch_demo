@@ -748,24 +748,16 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '500':
           $ref: '#/components/responses/InternalServerError'
-  /v1/admin/products/{productID}/comments/violations:
+  /v1/admin/products/comments/violations:
     get:
       tags:
         - v1
         - admin
         - admin/products/comments/violations
-      summary: 商品に関連するコメント違反一覧の取得API
+      summary: 不適切なコメントが投稿の一覧取得API
       description: 商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します。
       operationId: getProductCommentViolations
       parameters:
-        - name: productID
-          in: path
-          description: 取得する商品の一意なID
-          required: true
-          schema:
-            type: integer
-            format: uint64
-            example: 10001001
         - name: cursor
           in: query
           description: |
@@ -784,7 +776,7 @@ paths:
           required: false
           schema:
             type: integer
-            format: uint64
+            format: uint32
             example: 10
             default: 10
             minimum: 1
@@ -1556,33 +1548,29 @@ components:
               - title
               - content
               - created_at
-              - like_count
               - report_reasons
               - user
+              - product_id
+              - rate
             properties:
               id:
                 type: integer
                 format: uint64
                 description: コメントの一意なID
-                example: 1000001
+                example: 70537001
               title:
                 type: string
                 description: コメントのタイトル
-                example: 何かを蔑むような不適切なコメントのタイトル
+                example: 最悪の製品。
               content:
                 type: string
                 description: コメントの本文
-                example: 何かを蔑むような不適切なコメントの本文。
+                example: まったく使えませんでした。
               created_at:
                 type: string
                 format: date-time
                 description: コメントの投稿日時（ISO 8601形式, JST）
                 example: '2025-02-15T13:45:30+09:00'
-              like_count:
-                type: integer
-                format: uint64
-                description: いいねの数
-                example: 15
               report_reasons:
                 type: array
                 description: コメントに対して報告された理由
@@ -1593,6 +1581,18 @@ components:
                   - inappropriate
               user:
                 $ref: '#/components/schemas/CommentByUser'
+              product_id:
+                type: integer
+                format: uint64
+                description: 商品ID
+                example: 20010001
+              rate:
+                type: integer
+                format: uint32
+                description: 商品に対する評価（1〜5の整数）
+                minimum: 1
+                maximum: 5
+                example: 1
             x-go-type-name: GetProductCommentViolations
         metadata:
           type: object

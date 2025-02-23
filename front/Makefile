@@ -1,8 +1,8 @@
 
 install-tools:
 	asdf plugin list
-	asdf install nodejs 20.10.0
-	asdf local nodejs 20.10.0
+	asdf install nodejs 22.13.1
+	asdf local nodejs 22.13.1
 	node -v
 
 up:
