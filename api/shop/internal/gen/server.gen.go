@@ -23,7 +23,7 @@ type ServerInterface interface {
 	GetProductCommentViolations(c *gin.Context, params GetProductCommentViolationsParams)
 	// 不適切なコメントの削除API
 	// (DELETE /v1/admin/products/comments/violations/{commentID})
-	DeleteProductCommentByID(c *gin.Context, commentID uint64)
+	DeleteProductCommentViolationByID(c *gin.Context, commentID uint64)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
@@ -153,8 +153,8 @@ func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
 	siw.Handler.GetProductCommentViolations(c, params)
 }
 
-// DeleteProductCommentByID operation middleware
-func (siw *ServerInterfaceWrapper) DeleteProductCommentByID(c *gin.Context) {
+// DeleteProductCommentViolationByID operation middleware
+func (siw *ServerInterfaceWrapper) DeleteProductCommentViolationByID(c *gin.Context) {
 
 	var err error
 
@@ -176,7 +176,7 @@ func (siw *ServerInterfaceWrapper) DeleteProductCommentByID(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.DeleteProductCommentByID(c, commentID)
+	siw.Handler.DeleteProductCommentViolationByID(c, commentID)
 }
 
 // DeleteCustomer operation middleware
@@ -778,7 +778,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 
 	router.GET(options.BaseURL+"/healthcheck", wrapper.Healthcheck)
 	router.GET(options.BaseURL+"/v1/admin/products/comments/violations", wrapper.GetProductCommentViolations)
-	router.DELETE(options.BaseURL+"/v1/admin/products/comments/violations/:commentID", wrapper.DeleteProductCommentByID)
+	router.DELETE(options.BaseURL+"/v1/admin/products/comments/violations/:commentID", wrapper.DeleteProductCommentViolationByID)
 	router.DELETE(options.BaseURL+"/v1/payment/customers", wrapper.DeleteCustomer)
 	router.POST(options.BaseURL+"/v1/payment/customers", wrapper.CreateCustomer)
 	router.GET(options.BaseURL+"/v1/payment/customers/:userID", wrapper.GetCustomerByUserID)
@@ -883,46 +883,46 @@ func (response GetProductCommentViolations500Response) VisitGetProductCommentVio
 	return nil
 }
 
-type DeleteProductCommentByIDRequestObject struct {
+type DeleteProductCommentViolationByIDRequestObject struct {
 	CommentID uint64 `json:"commentID"`
 }
 
-type DeleteProductCommentByIDResponseObject interface {
-	VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error
+type DeleteProductCommentViolationByIDResponseObject interface {
+	VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error
 }
 
-type DeleteProductCommentByID204Response struct {
+type DeleteProductCommentViolationByID204Response struct {
 }
 
-func (response DeleteProductCommentByID204Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+func (response DeleteProductCommentViolationByID204Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(204)
 	return nil
 }
 
-type DeleteProductCommentByID401Response = UnauthorizedResponse
+type DeleteProductCommentViolationByID401Response = UnauthorizedResponse
 
-func (response DeleteProductCommentByID401Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+func (response DeleteProductCommentViolationByID401Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(401)
 	return nil
 }
 
-type DeleteProductCommentByID403Response = ForbiddenResponse
+type DeleteProductCommentViolationByID403Response = ForbiddenResponse
 
-func (response DeleteProductCommentByID403Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+func (response DeleteProductCommentViolationByID403Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(403)
 	return nil
 }
 
-type DeleteProductCommentByID404Response = NotFoundResponse
+type DeleteProductCommentViolationByID404Response = NotFoundResponse
 
-func (response DeleteProductCommentByID404Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+func (response DeleteProductCommentViolationByID404Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
 }
 
-type DeleteProductCommentByID500Response = InternalServerErrorResponse
+type DeleteProductCommentViolationByID500Response = InternalServerErrorResponse
 
-func (response DeleteProductCommentByID500Response) VisitDeleteProductCommentByIDResponse(w http.ResponseWriter) error {
+func (response DeleteProductCommentViolationByID500Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(500)
 	return nil
 }
@@ -1882,7 +1882,7 @@ type StrictServerInterface interface {
 	GetProductCommentViolations(ctx *gin.Context, request GetProductCommentViolationsRequestObject) (GetProductCommentViolationsResponseObject, error)
 	// 不適切なコメントの削除API
 	// (DELETE /v1/admin/products/comments/violations/{commentID})
-	DeleteProductCommentByID(ctx *gin.Context, request DeleteProductCommentByIDRequestObject) (DeleteProductCommentByIDResponseObject, error)
+	DeleteProductCommentViolationByID(ctx *gin.Context, request DeleteProductCommentViolationByIDRequestObject) (DeleteProductCommentViolationByIDResponseObject, error)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(ctx *gin.Context, request DeleteCustomerRequestObject) (DeleteCustomerResponseObject, error)
@@ -2018,17 +2018,17 @@ func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, params Ge
 	}
 }
 
-// DeleteProductCommentByID operation middleware
-func (sh *strictHandler) DeleteProductCommentByID(ctx *gin.Context, commentID uint64) {
-	var request DeleteProductCommentByIDRequestObject
+// DeleteProductCommentViolationByID operation middleware
+func (sh *strictHandler) DeleteProductCommentViolationByID(ctx *gin.Context, commentID uint64) {
+	var request DeleteProductCommentViolationByIDRequestObject
 
 	request.CommentID = commentID
 
 	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.DeleteProductCommentByID(ctx, request.(DeleteProductCommentByIDRequestObject))
+		return sh.ssi.DeleteProductCommentViolationByID(ctx, request.(DeleteProductCommentViolationByIDRequestObject))
 	}
 	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "DeleteProductCommentByID")
+		handler = middleware(handler, "DeleteProductCommentViolationByID")
 	}
 
 	response, err := handler(ctx, request)
@@ -2036,8 +2036,8 @@ func (sh *strictHandler) DeleteProductCommentByID(ctx *gin.Context, commentID ui
 	if err != nil {
 		ctx.Error(err)
 		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(DeleteProductCommentByIDResponseObject); ok {
-		if err := validResponse.VisitDeleteProductCommentByIDResponse(ctx.Writer); err != nil {
+	} else if validResponse, ok := response.(DeleteProductCommentViolationByIDResponseObject); ok {
+		if err := validResponse.VisitDeleteProductCommentViolationByIDResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
