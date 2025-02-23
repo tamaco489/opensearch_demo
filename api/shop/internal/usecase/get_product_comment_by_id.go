@@ -23,29 +23,29 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 		DocumentID: documentID,
 	})
 	if err != nil {
-		return nil, err
+		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to get product comment by id: %v", err)
 	}
 
 	var res opensearchapi.DocumentGetResp
 	if err := json.NewDecoder(getResult.Inspect().Response.Body).Decode(&res); err != nil {
-		return nil, fmt.Errorf("failed to decode response: %w", err)
+		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to decode response: %w", err)
 	}
 
 	var source entity.ProductComment
 	if err := json.Unmarshal(res.Source, &source); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal source: %w", err)
+		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to unmarshal source: %w", err)
 	}
 
 	// comment_id を string → uint64に変換
 	commentID, err := strconv.ParseUint(res.ID, 10, 64)
 	if err != nil {
-		return nil, err
+		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to parse comment_id: %w", err)
 	}
 
 	// created_at をtime.Time型に変換
 	createdAt, err := time.Parse("2006-01-02 15:04:05", source.CreatedAt)
 	if err != nil {
-		return nil, fmt.Errorf("failed to parse CreatedAt: %w", err)
+		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to parse created_at: %w", err)
 	}
 
 	return gen.GetProductCommentByID200JSONResponse{
