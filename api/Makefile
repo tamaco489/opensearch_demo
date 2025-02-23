@@ -223,7 +223,7 @@ search-comment-by-product-id-and-created_at-desc:
 		-d '{"query": {"match": {"product_id": 20010001}}, "sort": [{"created_at": {"order": "desc"}}], "size": 1}' | jq .
 
 doc-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらの方が効率的）
-	curl -sX GET "http://localhost:9200/product_comments/_doc/70235692?pretty" \
+	curl -sX GET "http://localhost:9200/product_comments/_doc/70235709?pretty" \
     -H 'Content-Type: application/json' | jq .
 
 # search-comment-by-product-id-and-comment-id: # 商品IDとコメントIDを指定してコメントを取得（こちらは非効率のためコメントアウト）
