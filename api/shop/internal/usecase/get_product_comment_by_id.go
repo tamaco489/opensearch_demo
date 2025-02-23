@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log/slog"
 	"strconv"
 	"time"
 
@@ -23,6 +24,11 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 		DocumentID: documentID,
 	})
 	if err != nil {
+		// OpenSearchのレスポンスに "found": false が含まれていた場合、コメントが見つからないので 404エラーを返す
+		if !getResult.Found {
+			slog.ErrorContext(ctx, fmt.Sprintf("failed to get product comment by id: %v", err))
+			return gen.GetProductCommentByID404Response{}, nil
+		}
 		return gen.GetProductCommentByID500Response{}, fmt.Errorf("failed to get product comment by id: %v", err)
 	}
 
