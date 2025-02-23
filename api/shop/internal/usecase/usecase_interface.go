@@ -17,6 +17,9 @@ type IProductCommentUseCase interface {
 
 	// 管理者向けAPI: GetProductCommentViolations（商品に対して投稿されたコメントの中で、予め定めたNGワードに該当するデータを取得します）
 	GetProductCommentViolations(ctx context.Context, request gen.GetProductCommentViolationsRequestObject) (gen.GetProductCommentViolationsResponseObject, error)
+
+	// 管理者向けAPI: DeleteProductCommentByID（不適切なコメントを削除します）
+	DeleteProductCommentByID(ctx context.Context, request gen.DeleteProductCommentByIDRequestObject) (gen.DeleteProductCommentByIDResponseObject, error)
 }
 
 // productCommentUseCase は、商品コメントに関連するユースケースを処理する具体的な実装です。
