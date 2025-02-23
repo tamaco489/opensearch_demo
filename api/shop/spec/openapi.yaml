@@ -286,6 +286,46 @@ paths:
           $ref: '#/components/responses/AlreadyExists'
         '500':
           $ref: '#/components/responses/InternalServerError'
+  /v1/products/{productID}/comments/{commentID}:
+    get:
+      tags:
+        - v1
+        - products/comments
+      summary: 商品に対するコメントの詳細な情報を取得するAPI
+      description: 商品に対するコメント詳細の取得API
+      operationId: getProductCommentByID
+      parameters:
+        - name: productID
+          in: path
+          description: 商品ID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 10001001
+        - name: commentID
+          in: path
+          description: コメントID
+          required: true
+          schema:
+            type: integer
+            format: uint64
+            example: 54009221
+      responses:
+        '200':
+          description: コメント詳細の取得に成功しました。
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CommentByID'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
   /v1/products/{productID}/users/comments/{commentID}:
     get:
       tags:
@@ -1204,6 +1244,50 @@ components:
           format: uint64
           description: 投稿したコメントID
           example: 70235591
+    CommentByID:
+      type: object
+      required:
+        - id
+        - title
+        - content
+        - created_at
+        - like_count
+        - report_reasons
+        - user
+      properties:
+        id:
+          type: integer
+          format: uint64
+          description: コメントの一意なID
+          example: 54009221
+        title:
+          type: string
+          description: コメントのタイトル
+          example: とても良い商品です
+        content:
+          type: string
+          description: コメントの本文
+          example: この商品は非常に良いです。特にデザインが素晴らしい。
+        created_at:
+          type: string
+          format: date-time
+          description: コメントの投稿日時（ISO 8601形式, JST）
+          example: '2025-02-15T13:45:30+09:00'
+        like_count:
+          type: integer
+          format: uint64
+          description: いいねの数
+          example: 15
+        report_reasons:
+          type: array
+          description: コメントに対して報告された理由
+          items:
+            $ref: '#/components/schemas/ReportReason'
+          example:
+            - irrelevant
+            - inappropriate
+        user:
+          $ref: '#/components/schemas/CommentByUser'
     GetMyCommentByIDResponse:
       type: object
       required:

@@ -1,0 +1,43 @@
+type: object
+required:
+  - id
+  - title
+  - content
+  - created_at
+  - like_count
+  - report_reasons
+  - user
+properties:
+  id:
+    type: integer
+    format: uint64
+    description: コメントの一意なID
+    example: 54009221
+  title:
+    type: string
+    description: コメントのタイトル
+    example: "とても良い商品です"
+  content:
+    type: string
+    description: コメントの本文
+    example: "この商品は非常に良いです。特にデザインが素晴らしい。"
+  created_at:
+    type: string
+    format: date-time
+    description: コメントの投稿日時（ISO 8601形式, JST）
+    example: "2025-02-15T13:45:30+09:00"
+  like_count:
+    type: integer
+    format: uint64
+    description: いいねの数
+    example: 15
+  report_reasons:
+    type: array
+    description: コメントに対して報告された理由
+    items:
+      $ref: "./ReportReason.yaml"
+    example:
+      - "irrelevant"
+      - "inappropriate"
+  user:
+    $ref: "./CommentByUser.yaml"

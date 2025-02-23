@@ -1,0 +1,39 @@
+get:
+  tags:
+    - v1
+    - products/comments
+  summary: 商品に対するコメントの詳細な情報を取得するAPI
+  description: 商品に対するコメント詳細の取得API
+  operationId: getProductCommentByID
+  parameters:
+    - name: productID
+      in: path
+      description: 商品ID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 10001001
+    - name: commentID
+      in: path
+      description: コメントID
+      required: true
+      schema:
+        type: integer
+        format: uint64
+        example: 54009221
+  responses:
+    '200':
+      description: コメント詳細の取得に成功しました。
+      content:
+        application/json:
+          schema:
+            $ref: '../schemas/CommentByID.yaml'
+    '400':
+      $ref: '../../../responses/BadRequest.yaml'
+    '401':
+      $ref: '../../../responses/Unauthorized.yaml'
+    '404':
+      $ref: '../../../responses/NotFound.yaml'
+    '500':
+      $ref: '../../../responses/InternalServerError.yaml'
