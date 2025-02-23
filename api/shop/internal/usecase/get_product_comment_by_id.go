@@ -32,7 +32,7 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 
 	log.Println("[INFO] 成功 resp.ID:", res.ID)
 
-	var source ProductCommentSource
+	var source entity.ProductComment
 	if err := json.Unmarshal(res.Source, &source); err != nil {
 		return nil, fmt.Errorf("failed to unmarshal source: %w", err)
 	}
@@ -63,15 +63,4 @@ func (u productCommentUseCase) GetProductCommentByID(ctx context.Context, reques
 		ProductId: source.ProductID,
 		Rate:      uint32(source.Rate),
 	}, nil
-}
-
-// レスポンス用の構造体を定義
-type ProductCommentSource struct {
-	ID        uint64 `json:"id"`
-	ProductID uint64 `json:"product_id"`
-	UserID    uint64 `json:"user_id"`
-	Title     string `json:"title"`
-	Content   string `json:"content"`
-	Rate      int    `json:"rate"`
-	CreatedAt string `json:"created_at"`
 }
