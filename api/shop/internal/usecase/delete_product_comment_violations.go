@@ -12,7 +12,7 @@ import (
 	"github.com/tamaco489/opensearch_demo/api/shop/internal/gen"
 )
 
-func (u productCommentUseCase) DeleteProductCommentByID(ctx context.Context, request gen.DeleteProductCommentByIDRequestObject) (gen.DeleteProductCommentByIDResponseObject, error) {
+func (u productCommentUseCase) DeleteProductCommentViolationsByID(ctx context.Context, request gen.DeleteProductCommentViolationByIDRequestObject) (gen.DeleteProductCommentViolationByIDResponseObject, error) {
 
 	documentID := strconv.FormatUint(request.CommentID, 10)
 
@@ -28,10 +28,10 @@ func (u productCommentUseCase) DeleteProductCommentByID(ctx context.Context, req
 	if err != nil {
 		if deleteResult.Inspect().Response.StatusCode == http.StatusNotFound {
 			slog.ErrorContext(ctx, fmt.Sprintf("not found comment id: %v", err))
-			return gen.DeleteProductCommentByID404Response{}, nil
+			return gen.DeleteProductCommentViolationByID404Response{}, nil
 		}
-		return gen.DeleteProductCommentByID500Response{}, err
+		return gen.DeleteProductCommentViolationByID500Response{}, err
 	}
 
-	return gen.DeleteProductCommentByID204Response{}, nil
+	return gen.DeleteProductCommentViolationByID500Response{}, nil
 }

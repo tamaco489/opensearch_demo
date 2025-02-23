@@ -804,7 +804,7 @@ paths:
         - admin/products/comments/violations
       summary: 不適切なコメントの削除API
       description: 不適切なコメントを削除します。
-      operationId: deleteProductCommentByID
+      operationId: deleteProductCommentViolationByID
       parameters:
         - name: commentID
           in: path
