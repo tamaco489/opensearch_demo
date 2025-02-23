@@ -20,7 +20,9 @@ type IProductCommentUseCase interface {
 }
 
 // productCommentUseCase は、商品コメントに関連するユースケースを処理する具体的な実装です。
-// IProductCommentUseCase インターフェースを満たし、OpenSearch を使用して商品コメントの作成や
+//
+// # IProductCommentUseCase インターフェースを満たし、OpenSearch を使用して商品コメントの作成や
+//
 // NG ワードを含むコメントの取得などの機能を提供します。
 type productCommentUseCase struct {
 	// OpenSearch API クライアントを使用してデータの検索・登録を行います。
@@ -28,6 +30,7 @@ type productCommentUseCase struct {
 }
 
 // NewCreateProductComment は、productCommentUseCase のコンストラクタ関数です。
+//
 // 新しい productCommentUseCase インスタンスを生成し、IProductCommentUseCase を実装したものを返します。
 func NewCreateProductComment(opsApiClient *opensearchapi.Client) IProductCommentUseCase {
 	return &productCommentUseCase{
