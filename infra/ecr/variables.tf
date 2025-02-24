@@ -1,5 +1,5 @@
 variable "env" {
-  description = "The environment in which the Route53 will be created"
+  description = "The environment in which the ecr will be created"
   type        = string
   default     = "dev"
 }
