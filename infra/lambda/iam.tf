@@ -7,6 +7,6 @@ resource "aws_iam_policy" "lambda_logging" {
   tags = {
     Env     = var.env
     Project = var.product
-    Name    = "${local.fqn}-api"
+    Name    = "${local.fqn}" // api, batch 双方で利用する想定のため
   }
 }
