@@ -28,8 +28,9 @@ func NewHShopAPIServer() (*http.Server, error) {
 	r.Use(gin.Recovery())
 
 	// NOTE: OpenSearchへの認証が必要な場合はこちら
+	cnf := configuration.Get()
 	// client, err := open_search.NewOpenSearchAPIClientWithSigner(configuration.Get().AWSConfig)
-	client, err := open_search.NewOpenSearchAPIClient()
+	client, err := open_search.NewOpenSearchAPIClient(cnf)
 	if err != nil {
 		return nil, err
 	}

@@ -1,7 +1,6 @@
 package open_search
 
 import (
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/opensearch-project/opensearch-go/v4"
 	"github.com/opensearch-project/opensearch-go/v4/opensearchapi"
 	"github.com/tamaco489/opensearch_demo/api/shop/internal/configuration"
@@ -12,15 +11,17 @@ import (
 // NewOpenSearchAPIClient:
 //
 // NOTE: https://opensearch.org/docs/latest/clients/go/
-func NewOpenSearchAPIClient() (*opensearchapi.Client, error) {
+func NewOpenSearchAPIClient(cnf configuration.Config) (*opensearchapi.Client, error) {
 
 	// Create an opensearch client and use the request-signer.
 	client, err := opensearchapi.NewClient(
 		opensearchapi.Config{
 			Client: opensearch.Config{
 				Addresses: []string{
-					configuration.Get().OpenSearch.EndPoint,
+					cnf.OpenSearch.EndPoint,
 				},
+				Username: cnf.OpenSearch.Username,
+				Password: cnf.OpenSearch.Password,
 			},
 		},
 	)
@@ -32,10 +33,10 @@ func NewOpenSearchAPIClient() (*opensearchapi.Client, error) {
 }
 
 // NewOpenSearchAPIClientWithSigner:
-func NewOpenSearchAPIClientWithSigner(awsCfg aws.Config) (*opensearchapi.Client, error) {
+func NewOpenSearchAPIClientWithSigner(cnf configuration.Config) (*opensearchapi.Client, error) {
 
 	// Create an AWS request Signer and load AWS configuration using default config folder or env vars.
-	signer, err := requestsigner.NewSignerWithService(awsCfg, "es") // Use "aoss" for Amazon OpenSearch Serverless
+	signer, err := requestsigner.NewSignerWithService(cnf.AWSConfig, "es") // Use "aoss" for Amazon OpenSearch Serverless
 	if err != nil {
 		return nil, err
 	}

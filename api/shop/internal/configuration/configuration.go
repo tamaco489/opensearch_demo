@@ -17,6 +17,8 @@ type Config struct {
 		EndPoint    string `envconfig:"API_ENDPOINT" default:"http://localhost:8080"`
 	}
 	OpenSearch struct {
+		Username             string `envconfig:"OPENSEARCH_USERNAME"`
+		Password             string `envconfig:"OPENSEARCH_PASSWORD"`
 		EndPoint             string `envconfig:"OPENSEARCH_ENDPOINT"`
 		InitialAdminPassword string `envconfig:"OPENSEARCH_INITIAL_ADMIN_PASSWORD"`
 	}
