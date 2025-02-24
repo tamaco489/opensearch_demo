@@ -24,7 +24,8 @@ security:
   - bearerAuth: []
 
 paths:
-  /healthcheck:
+  # /healthcheck: # api-gatewayでエンドポイントを/v1/を指定しているため
+  /v1/healthcheck:
     get:
       tags:
         - healthcheck

@@ -1,5 +1,5 @@
 # =================================================================
-# API Request
+# api request (local)
 # =================================================================
 # 管理用API
 .PHONY: api-all-request
@@ -37,7 +37,7 @@ api-all-request: healthcheck sleep \
 .PHONY: healthcheck
 healthcheck:
 	curl -i -X 'GET' \
-		'http://localhost:8080/shop/healthcheck' \
+		'http://localhost:8080/shop/v1/healthcheck' \
 		-H 'accept: application/json'
 
 # ユーザ系API
@@ -199,7 +199,7 @@ delete-violations-comment:
 
 
 # =================================================================
-# OpenSearch API Request
+# open search api request
 # =================================================================
 # インデックス作成・削除
 .PHONY: create-product-comments-index delete-product-comments-index
@@ -252,3 +252,27 @@ delete-all-ops:
 	curl -i -sX POST "http://localhost:9200/product_comments/_delete_by_query" \
 		-H 'Content-Type: application/json' \
 		-d '{"query": {"match_all": {}}}'
+
+
+# =================================================================
+# api request (aws)
+# =================================================================
+# AWS_API_v1_DOMAIN := apiv1.<api-domain>
+
+.PHONY: aws-healthcheck
+aws-healthcheck:
+	curl -i -X 'GET' \
+		'https://${AWS_API_v1_DOMAIN}/shop/v1/healthcheck' \
+		-H 'accept: application/json'
+
+.PHONY: aws-create-user aws-get-me
+aws-create-user:
+	curl -i -X 'POST' \
+		'https://${AWS_API_v1_DOMAIN}/shop/v1/users' \
+		-H 'accept: application/json' \
+		-d ''
+
+aws-get-me:
+	curl -i -X 'GET' \
+		'https://${AWS_API_v1_DOMAIN}/shop/v1/users/me' \
+		-H 'accept: application/json'

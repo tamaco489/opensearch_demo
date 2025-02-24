@@ -1,5 +1,5 @@
 variable "env" {
-  description = "The environment in which the lambda logging iam policy will be created"
+  description = "The environment in which the shop api lambda will be created"
   type        = string
   default     = "dev"
 }
