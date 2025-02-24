@@ -4,10 +4,16 @@ variable "env" {
   default     = "dev"
 }
 
+variable "project" {
+  description = "The project name"
+  type        = string
+  default     = "opensearch-demo"
+}
+
 variable "product" {
   description = "The product name"
   type        = string
-  default     = "opensearch-demo"
+  default     = "shop"
 }
 
 variable "region" {
