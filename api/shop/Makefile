@@ -1,7 +1,7 @@
 # =================================================================
 # Common
 # =================================================================
-VERSION := opensearch_demo_v0.0.0
+VERSION := shop_api_v0.0.0
 
 
 # =================================================================
@@ -70,18 +70,18 @@ auth:
 
 # make push AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_PROFILE=${AWS_PROFILE}
 push: auth
-	docker build --platform linux/amd64 --no-cache -t $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/dev-opensearch-demo-api:$(VERSION) -f ./build/Dockerfile.shop .
-	docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-opensearch-demo-api:$(VERSION)
+	docker build --platform linux/amd64 --no-cache -t $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/dev-shop-api:$(VERSION) -f ./build/Dockerfile.shop .
+	docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-shop-api:$(VERSION)
 
 # make get-images AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_PROFILE=${AWS_PROFILE}
 get-images:
-	aws ecr list-images --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' | jq .
+	aws ecr list-images --repository-name dev-shop-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' | jq .
 
 # make delete-images AWS_PROFILE=${AWS_PROFILE}
 delete-images:
-	@aws ecr list-images --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' --output json > /tmp/images.json
+	@aws ecr list-images --repository-name dev-shop-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' --output json > /tmp/images.json
 	@cat /tmp/images.json | jq -c '.[]' | while read -r image_id; do \
-		aws ecr batch-delete-image --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --image-ids $${image_id}; \
+		aws ecr batch-delete-image --repository-name dev-shop-api --region ap-northeast-1 --profile ${AWS_PROFILE} --image-ids $${image_id}; \
 	done | jq .
 
 

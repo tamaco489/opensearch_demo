@@ -1,4 +1,4 @@
-resource "aws_ecr_repository" "opensearch_demo" {
+resource "aws_ecr_repository" "shop_api" {
   name = "${local.fqn}-api"
 
   # 既存のタグに対して、後から上書きを可能とする設定
@@ -11,14 +11,14 @@ resource "aws_ecr_repository" "opensearch_demo" {
 
   tags = {
     Env     = var.env
-    Project = var.product
+    Project = var.project
     Name  = "${local.fqn}-api"
   }
 }
 
 # ライフサイクルポリシーの設定
-resource "aws_ecr_lifecycle_policy" "opensearch_demo" {
-  repository = aws_ecr_repository.opensearch_demo.name
+resource "aws_ecr_lifecycle_policy" "shop_api" {
+  repository = aws_ecr_repository.shop_api.name
 
   policy = jsonencode(
     {
@@ -28,7 +28,7 @@ resource "aws_ecr_lifecycle_policy" "opensearch_demo" {
           "description" : "バージョン付きのイメージを5個保持する、6個目がアップロードされた際には古いものから順に削除されていく",
           "selection" : {
             "tagStatus" : "tagged",
-            "tagPrefixList" : ["opensearch_demo_v"],
+            "tagPrefixList" : ["shop_api_v"],
             "countType" : "imageCountMoreThan",
             "countNumber" : 5
           },
