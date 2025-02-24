@@ -86,14 +86,11 @@ delete-images:
 
 
 # =================================================================
-# Go Doc
+# for Lambda
 # =================================================================
-.PHONY: go-doc
-go-doc:
-	# godoc サーバーを起動してブラウザで確認
-	go doc controller.NewCorsConfig
-	go doc controller.CreateProductComment
-	@echo "Starting godoc server..."
-	@godoc -http=:6060 &
-	@echo "Godoc server started at http://localhost:6060"
-	@echo "Open your browser to http://localhost:6060/pkg/github.com/tamaco489/opensearch_demo/api/shop/controller/"
+.PHONY: deploy
+# make deploy AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_PROFILE=${AWS_PROFILE}
+deploy: push
+	aws lambda update-function-code  --profile ${AWS_PROFILE} \
+		--function-name dev-shop-api \
+		--image-uri $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/dev-shop-api:$(VERSION) | jq .
