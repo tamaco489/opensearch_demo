@@ -14,7 +14,7 @@ resource "aws_acm_certificate" "opensearch_demo" {
   }
 }
 
-# API Gatewayのカスタムドメインの定義（画像処理サービスAPI向け）
+# API Gateway カスタムドメイン
 resource "aws_apigatewayv2_domain_name" "opensearch_demo_apiv1" {
   domain_name = "apiv1.${data.terraform_remote_state.route53.outputs.host_zone.name}"
 
@@ -25,7 +25,7 @@ resource "aws_apigatewayv2_domain_name" "opensearch_demo_apiv1" {
   }
 }
 
-# API V2向けのRoute53 Aレコードを設定（画像処理サービスAPI向け）
+# Route53 Aレコード
 resource "aws_route53_record" "opensearch_demo_apiv1" {
   zone_id = data.terraform_remote_state.route53.outputs.host_zone.id
   name    = "apiv1.${data.terraform_remote_state.route53.outputs.host_zone.name}"
