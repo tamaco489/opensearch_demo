@@ -12,7 +12,7 @@ import (
 // NewOpenSearchAPIClient:
 //
 // NOTE: https://opensearch.org/docs/latest/clients/go/
-func NewOpenSearchAPIClient(awsCfg aws.Config) (*opensearchapi.Client, error) {
+func NewOpenSearchAPIClient() (*opensearchapi.Client, error) {
 
 	// Create an opensearch client and use the request-signer.
 	client, err := opensearchapi.NewClient(
