@@ -246,7 +246,6 @@ search-ngword-comment:
 			-H 'Content-Type: application/json' \
 			-d '{"query": {"bool": {"should": [{ "match_phrase": { "content": "クズ" }}, { "match_phrase": { "content": "ゴミ" }}, { "match_phrase": { "content": "ぶっ潰す" }}, { "match_phrase": { "content": "http://" }}, { "match_phrase": { "content": "https://" }}, { "match_phrase": { "content": "最悪" }}, { "match_phrase": { "title": "クズ" }}, { "match_phrase": { "title": "ゴミ" }}, { "match_phrase": { "title": "ぶっ潰す" }}, { "match_phrase": { "title": "http://" }}, { "match_phrase": { "title": "https://" }}, { "match_phrase": { "title": "最悪" }}], "minimum_should_match": 1}}, "size": 10}' | jq .
 
-
 # データ削除
 .PHONY: delete-all-ops
 delete-all-ops:
