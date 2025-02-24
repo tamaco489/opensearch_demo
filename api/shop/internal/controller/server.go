@@ -27,7 +27,9 @@ func NewHShopAPIServer() (*http.Server, error) {
 	// 万が一panicが発生した場合でも、サーバは適切にエラーレスポンスを返し、正常に動作し続ける。※HTTP Status Code 5xx を返す
 	r.Use(gin.Recovery())
 
-	client, err := open_search.NewOpenSearchAPIClient(configuration.Get().AWSConfig)
+	// NOTE: OpenSearchへの認証が必要な場合はこちら
+	// client, err := open_search.NewOpenSearchAPIClientWithSigner(configuration.Get().AWSConfig)
+	client, err := open_search.NewOpenSearchAPIClient()
 	if err != nil {
 		return nil, err
 	}
