@@ -15,15 +15,15 @@ import (
 
 // ServerInterface represents all server handlers.
 type ServerInterface interface {
-	// ヘルスチェックAPI
-	// (GET /healthcheck)
-	Healthcheck(c *gin.Context)
 	// 不適切なコメントの一覧取得API
 	// (GET /v1/admin/products/comments/violations)
 	GetProductCommentViolations(c *gin.Context, params GetProductCommentViolationsParams)
 	// 不適切なコメントの削除API
 	// (DELETE /v1/admin/products/comments/violations/{commentID})
 	DeleteProductCommentViolationByID(c *gin.Context, commentID uint64)
+	// ヘルスチェックAPI
+	// (GET /v1/healthcheck)
+	Healthcheck(c *gin.Context)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(c *gin.Context)
@@ -104,19 +104,6 @@ type ServerInterfaceWrapper struct {
 
 type MiddlewareFunc func(c *gin.Context)
 
-// Healthcheck operation middleware
-func (siw *ServerInterfaceWrapper) Healthcheck(c *gin.Context) {
-
-	for _, middleware := range siw.HandlerMiddlewares {
-		middleware(c)
-		if c.IsAborted() {
-			return
-		}
-	}
-
-	siw.Handler.Healthcheck(c)
-}
-
 // GetProductCommentViolations operation middleware
 func (siw *ServerInterfaceWrapper) GetProductCommentViolations(c *gin.Context) {
 
@@ -177,6 +164,19 @@ func (siw *ServerInterfaceWrapper) DeleteProductCommentViolationByID(c *gin.Cont
 	}
 
 	siw.Handler.DeleteProductCommentViolationByID(c, commentID)
+}
+
+// Healthcheck operation middleware
+func (siw *ServerInterfaceWrapper) Healthcheck(c *gin.Context) {
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		middleware(c)
+		if c.IsAborted() {
+			return
+		}
+	}
+
+	siw.Handler.Healthcheck(c)
 }
 
 // DeleteCustomer operation middleware
@@ -776,9 +776,9 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 		ErrorHandler:       errorHandler,
 	}
 
-	router.GET(options.BaseURL+"/healthcheck", wrapper.Healthcheck)
 	router.GET(options.BaseURL+"/v1/admin/products/comments/violations", wrapper.GetProductCommentViolations)
 	router.DELETE(options.BaseURL+"/v1/admin/products/comments/violations/:commentID", wrapper.DeleteProductCommentViolationByID)
+	router.GET(options.BaseURL+"/v1/healthcheck", wrapper.Healthcheck)
 	router.DELETE(options.BaseURL+"/v1/payment/customers", wrapper.DeleteCustomer)
 	router.POST(options.BaseURL+"/v1/payment/customers", wrapper.CreateCustomer)
 	router.GET(options.BaseURL+"/v1/payment/customers/:userID", wrapper.GetCustomerByUserID)
@@ -820,22 +820,6 @@ type NotFoundResponse struct {
 }
 
 type UnauthorizedResponse struct {
-}
-
-type HealthcheckRequestObject struct {
-}
-
-type HealthcheckResponseObject interface {
-	VisitHealthcheckResponse(w http.ResponseWriter) error
-}
-
-type Healthcheck200JSONResponse HealthCheck
-
-func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.ResponseWriter) error {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(200)
-
-	return json.NewEncoder(w).Encode(response)
 }
 
 type GetProductCommentViolationsRequestObject struct {
@@ -925,6 +909,22 @@ type DeleteProductCommentViolationByID500Response = InternalServerErrorResponse
 func (response DeleteProductCommentViolationByID500Response) VisitDeleteProductCommentViolationByIDResponse(w http.ResponseWriter) error {
 	w.WriteHeader(500)
 	return nil
+}
+
+type HealthcheckRequestObject struct {
+}
+
+type HealthcheckResponseObject interface {
+	VisitHealthcheckResponse(w http.ResponseWriter) error
+}
+
+type Healthcheck200JSONResponse HealthCheck
+
+func (response Healthcheck200JSONResponse) VisitHealthcheckResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type DeleteCustomerRequestObject struct {
@@ -1874,15 +1874,15 @@ func (response GetProfileMe500Response) VisitGetProfileMeResponse(w http.Respons
 
 // StrictServerInterface represents all server handlers.
 type StrictServerInterface interface {
-	// ヘルスチェックAPI
-	// (GET /healthcheck)
-	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
 	// 不適切なコメントの一覧取得API
 	// (GET /v1/admin/products/comments/violations)
 	GetProductCommentViolations(ctx *gin.Context, request GetProductCommentViolationsRequestObject) (GetProductCommentViolationsResponseObject, error)
 	// 不適切なコメントの削除API
 	// (DELETE /v1/admin/products/comments/violations/{commentID})
 	DeleteProductCommentViolationByID(ctx *gin.Context, request DeleteProductCommentViolationByIDRequestObject) (DeleteProductCommentViolationByIDResponseObject, error)
+	// ヘルスチェックAPI
+	// (GET /v1/healthcheck)
+	Healthcheck(ctx *gin.Context, request HealthcheckRequestObject) (HealthcheckResponseObject, error)
 	// 外部決済向けサービスのアカウント削除API
 	// (DELETE /v1/payment/customers)
 	DeleteCustomer(ctx *gin.Context, request DeleteCustomerRequestObject) (DeleteCustomerResponseObject, error)
@@ -1966,31 +1966,6 @@ type strictHandler struct {
 	middlewares []StrictMiddlewareFunc
 }
 
-// Healthcheck operation middleware
-func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
-	var request HealthcheckRequestObject
-
-	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
-		return sh.ssi.Healthcheck(ctx, request.(HealthcheckRequestObject))
-	}
-	for _, middleware := range sh.middlewares {
-		handler = middleware(handler, "Healthcheck")
-	}
-
-	response, err := handler(ctx, request)
-
-	if err != nil {
-		ctx.Error(err)
-		ctx.Status(http.StatusInternalServerError)
-	} else if validResponse, ok := response.(HealthcheckResponseObject); ok {
-		if err := validResponse.VisitHealthcheckResponse(ctx.Writer); err != nil {
-			ctx.Error(err)
-		}
-	} else if response != nil {
-		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
-	}
-}
-
 // GetProductCommentViolations operation middleware
 func (sh *strictHandler) GetProductCommentViolations(ctx *gin.Context, params GetProductCommentViolationsParams) {
 	var request GetProductCommentViolationsRequestObject
@@ -2038,6 +2013,31 @@ func (sh *strictHandler) DeleteProductCommentViolationByID(ctx *gin.Context, com
 		ctx.Status(http.StatusInternalServerError)
 	} else if validResponse, ok := response.(DeleteProductCommentViolationByIDResponseObject); ok {
 		if err := validResponse.VisitDeleteProductCommentViolationByIDResponse(ctx.Writer); err != nil {
+			ctx.Error(err)
+		}
+	} else if response != nil {
+		ctx.Error(fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Healthcheck operation middleware
+func (sh *strictHandler) Healthcheck(ctx *gin.Context) {
+	var request HealthcheckRequestObject
+
+	handler := func(ctx *gin.Context, request interface{}) (interface{}, error) {
+		return sh.ssi.Healthcheck(ctx, request.(HealthcheckRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Healthcheck")
+	}
+
+	response, err := handler(ctx, request)
+
+	if err != nil {
+		ctx.Error(err)
+		ctx.Status(http.StatusInternalServerError)
+	} else if validResponse, ok := response.(HealthcheckResponseObject); ok {
+		if err := validResponse.VisitHealthcheckResponse(ctx.Writer); err != nil {
 			ctx.Error(err)
 		}
 	} else if response != nil {
