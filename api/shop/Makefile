@@ -1,4 +1,10 @@
 # =================================================================
+# Common
+# =================================================================
+VERSION := opensearch_demo_v0.0.0
+
+
+# =================================================================
 # setup tools
 # =================================================================
 .PHONY: setup-env install-tools
@@ -24,7 +30,7 @@ bundle-openapi:
 
 
 # =================================================================
-# for CI
+# for ci
 # =================================================================
 .PHONY: lint deps build run
 
@@ -42,7 +48,7 @@ run: build
 
 
 # =================================================================
-# for Container
+# for container
 # =================================================================
 .PHONY: up down logs
 up:
@@ -53,6 +59,30 @@ down:
 
 logs:
 	docker compose logs -f shop-api
+
+
+# =================================================================
+# for ecr
+# =================================================================
+.PHONY: auth push get-images delete-images
+auth:
+	aws ecr get-login-password --region ap-northeast-1 --profile ${AWS_PROFILE} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com
+
+# make push AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_PROFILE=${AWS_PROFILE}
+push: auth
+	docker build --platform linux/amd64 --no-cache -t $(AWS_ACCOUNT_ID).dkr.ecr.ap-northeast-1.amazonaws.com/dev-opensearch-demo-api:$(VERSION) -f ./build/Dockerfile.shop .
+	docker push ${AWS_ACCOUNT_ID}.dkr.ecr.ap-northeast-1.amazonaws.com/dev-opensearch-demo-api:$(VERSION)
+
+# make get-images AWS_ACCOUNT_ID=${AWS_ACCOUNT_ID} AWS_PROFILE=${AWS_PROFILE}
+get-images:
+	aws ecr list-images --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' | jq .
+
+# make delete-images AWS_PROFILE=${AWS_PROFILE}
+delete-images:
+	@aws ecr list-images --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --query 'imageIds[*]' --output json > /tmp/images.json
+	@cat /tmp/images.json | jq -c '.[]' | while read -r image_id; do \
+		aws ecr batch-delete-image --repository-name dev-opensearch-demo-api --region ap-northeast-1 --profile ${AWS_PROFILE} --image-ids $${image_id}; \
+	done | jq .
 
 
 # =================================================================
