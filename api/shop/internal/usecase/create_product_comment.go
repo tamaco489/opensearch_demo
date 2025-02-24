@@ -34,6 +34,7 @@ func (u *productCommentUseCase) CreateProductComment(ctx context.Context, reques
 
 	// 検索リクエストを作成、直近のコメントIDを取得する
 	// NOTE: トランザクションなどを考慮すると、コメントデータはRDBMS等で管理し、そこからデータを取得したほうが保守的な観点では良さそう。
+	// NOTE: https://github.com/opensearch-project/opensearch-go/blob/main/opensearchapi/api_search.go
 	searchResult, err := u.opsApiClient.Search(
 		ctx,
 		&opensearchapi.SearchReq{
@@ -42,7 +43,7 @@ func (u *productCommentUseCase) CreateProductComment(ctx context.Context, reques
 		},
 	)
 	if err != nil {
-		return gen.CreateCharge500Response{}, err
+		return gen.CreateCharge500Response{}, fmt.Errorf("failed to search for comments: %v", err)
 	}
 
 	// 初期値の設定、検索結果が0件ではない場合にのみ値の更新を行う
@@ -62,10 +63,11 @@ func (u *productCommentUseCase) CreateProductComment(ctx context.Context, reques
 	}
 
 	// OpenSearch にデータ投入
+	// NOTE: https://github.com/opensearch-project/opensearch-go/blob/main/opensearchapi/api_index.go
 	idxRequest := opensearchapi.IndexReq{
 		Index:      entity.ProductComments.String(),
 		DocumentID: strconv.FormatUint(commentEntity.ID, 10),
-		Body:       bytes.NewReader(commentEntityJSON),
+		Body:       bytes.NewReader(commentEntityJSON), // 予め定義しておいた構造体を使用してJSON にシリアライズしたものをbytes.NewReader() に渡してストリーム化
 		Params: opensearchapi.IndexParams{
 			Refresh: "true",
 			Timeout: 5 * time.Second,
@@ -73,7 +75,7 @@ func (u *productCommentUseCase) CreateProductComment(ctx context.Context, reques
 	}
 	_, err = u.opsApiClient.Index(ctx, idxRequest)
 	if err != nil {
-		return gen.CreateProductComment500Response{}, fmt.Errorf("error creating product comment: %v", err)
+		return gen.CreateProductComment500Response{}, fmt.Errorf("failed to creating comment: %v", err)
 	}
 
 	return gen.CreateProductComment201JSONResponse{
