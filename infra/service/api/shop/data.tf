@@ -6,18 +6,18 @@ data "terraform_remote_state" "ecr" {
   }
 }
 
-data "terraform_remote_state" "lambda" {
-  backend = "s3"
-  config = {
-    bucket = "${var.env}-opensearch-demo-tfstate"
-    key    = "lambda/terraform.tfstate"
-  }
-}
-
 data "terraform_remote_state" "acm" {
   backend = "s3"
   config = {
     bucket = "${var.env}-opensearch-demo-tfstate"
     key    = "acm/terraform.tfstate"
+  }
+}
+
+data "terraform_remote_state" "network" {
+  backend = "s3"
+  config = {
+    bucket = "${var.env}-opensearch-demo-tfstate"
+    key    = "network/terraform.tfstate"
   }
 }
