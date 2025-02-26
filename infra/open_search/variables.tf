@@ -1,5 +1,5 @@
 variable "env" {
-  description = "The environment in which the shop api lambda will be created"
+  description = "The environment in which the open search will be created"
   type        = string
   default     = "dev"
 }
@@ -16,16 +16,10 @@ variable "product" {
   default     = "shop"
 }
 
-variable "region" {
-  description = "The region in which the shop api lambda will be created"
+variable "index" {
+  description = "The open search index name"
   type        = string
-  default     = "ap-northeast-1"
-}
-
-variable "aws_account_id" {
-  description = "The aws account id"
-  type        = string
-  default     = "1234567890"
+  default     = "product_comments"
 }
 
 locals {

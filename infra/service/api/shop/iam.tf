@@ -23,31 +23,38 @@ resource "aws_iam_role" "shop_api" {
   }
 }
 
-# DynamoDBへのアクセス権を定義するポリシードキュメントを生成する
-# data "aws_iam_policy_document" "shop_api" {
-#   statement {
-#     effect = "Allow"
-#     actions = [
-#       "dynamodb:PutItem",
-#       "dynamodb:Query",
-#       "dynamodb:UpdateItem",
-#       "dynamodb:BatchWriteItem"
-#     ]
-#     resources = ["${aws_dynamodb_table.user_table.arn}"]
-#   }
-# }
-
-# DynamoDBアクセス権限をIAM Roleに付与する
-# resource "aws_iam_role_policy" "shop_api" {
-#   name   = "${local.fqn}-api-dynamodb-access-policy"
-#   role   = aws_iam_role.shop_api.id
-#   policy = data.aws_iam_policy_document.shop_api.json
-# }
-
-
 # NOTE: VPC Lambda として稼働させるために最低限必要になる権限を関連付ける（ENI作成、削除、CloudWatch Logsへの書き込み等）
 # https://docs.aws.amazon.com/ja_jp/aws-managed-policy/latest/reference/AWSLambdaVPCAccessExecutionRole.html
 resource "aws_iam_role_policy_attachment" "shop_api_execution_role" {
   role       = aws_iam_role.shop_api.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
+
+# AWS IAMポリシーの作成
+# このポリシーは、LambdaがOpenSearch Serverlessにアクセスできるようにする
+# Lambda関数に対して、特定のインデックスに対する読み書き権限を付与
+resource "aws_iam_policy" "opensearch_access_policy" {
+  name        = "${var.env}-${var.project}-opensearch-access-policy"
+  description = "Allow Lambda to access OpenSearch Serverless"
+
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect = "Allow",
+      Action = [
+        "aoss:ReadDocument",
+        "aoss:WriteDocument"
+      ],
+      Resource = ["arn:aws:aoss:${var.region}:${var.aws_account_id}:collection/${local.collection_name}/index/product_comments"]
+    }]
+  })
+}
+
+# AWS Lambdaが指定されたロールを引き受けるためのポリシードキュメントを生成する
+# これにより、Lambda関数が指定されたIAMロールを引き受け、指定されたリソースにアクセスするための権限を持つことができるようになる
+# Lambda関数がOpenSearch Serverlessにアクセスするために必要な設定
+resource "aws_iam_role_policy_attachment" "shop_api_opensearch_attach" {
+  role       = aws_iam_role.shop_api.name
+  policy_arn = aws_iam_policy.opensearch_access_policy.arn
+}
+
