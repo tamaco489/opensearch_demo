@@ -39,20 +39,20 @@ variable "vpc_cidr_block" {
   default     = "10.1.0.0/16"
 }
 
-variable "public_subnet" {
-  description = "The cidr block for the public subnet"
-  type        = map(map(string))
-  default = {
-    a = {
-      az   = "a"
-      cidr = "10.1.11.0/24"
-    }
-    d = {
-      az   = "d"
-      cidr = "10.1.12.0/24"
-    }
-  }
-}
+# variable "public_subnet" {
+#   description = "The cidr block for the public subnet"
+#   type        = map(map(string))
+#   default = {
+#     a = {
+#       az   = "a"
+#       cidr = "10.1.11.0/24"
+#     }
+#     d = {
+#       az   = "d"
+#       cidr = "10.1.12.0/24"
+#     }
+#   }
+# }
 
 variable "private_subnet" {
   description = "The cidr block for the private subnet"

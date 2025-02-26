@@ -1,33 +1,33 @@
 # =================================================================
 # public
 # =================================================================
-resource "aws_route_table" "public" {
-  for_each = var.public_subnet
+# resource "aws_route_table" "public" {
+#   for_each = var.public_subnet
 
-  vpc_id = aws_vpc.opensearch_demo.id
+#   vpc_id = aws_vpc.opensearch_demo.id
 
-  tags = {
-    Env     = var.env
-    Project = var.project
-    Name    = "${var.env}-${var.project}-public-rt-${each.value["az"]}"
-    AZ      = "${each.value["az"]}"
-  }
-}
+#   tags = {
+#     Env     = var.env
+#     Project = var.project
+#     Name    = "${var.env}-${var.project}-public-rt-${each.value["az"]}"
+#     AZ      = "${each.value["az"]}"
+#   }
+# }
 
-resource "aws_route" "public_internet_gateway" {
-  for_each = var.public_subnet
+# resource "aws_route" "public_internet_gateway" {
+#   for_each = var.public_subnet
 
-  route_table_id         = aws_route_table.public[each.key].id
-  destination_cidr_block = "0.0.0.0/0"
-  gateway_id             = aws_internet_gateway.opensearch_demo.id
-}
+#   route_table_id         = aws_route_table.public[each.key].id
+#   destination_cidr_block = "0.0.0.0/0"
+#   gateway_id             = aws_internet_gateway.opensearch_demo.id
+# }
 
-resource "aws_route_table_association" "public" {
-  for_each = var.public_subnet
+# resource "aws_route_table_association" "public" {
+#   for_each = var.public_subnet
 
-  route_table_id = aws_route_table.public[each.key].id
-  subnet_id      = aws_subnet.public_subnet[each.key].id
-}
+#   route_table_id = aws_route_table.public[each.key].id
+#   subnet_id      = aws_subnet.public_subnet[each.key].id
+# }
 
 # =================================================================
 # private
