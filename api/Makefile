@@ -257,7 +257,7 @@ delete-all-ops:
 # =================================================================
 # api request (aws)
 # =================================================================
-# AWS_API_v1_DOMAIN := apiv1.<api-domain>
+AWS_API_v1_DOMAIN := apiv1.<api-domain>
 
 .PHONY: aws-healthcheck
 aws-healthcheck:
