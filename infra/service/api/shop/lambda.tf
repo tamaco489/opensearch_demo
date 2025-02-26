@@ -7,6 +7,12 @@ resource "aws_lambda_function" "shop_api" {
   timeout       = 20
   memory_size   = 128
 
+  vpc_config {
+    ipv6_allowed_for_dual_stack = false
+    security_group_ids          = [aws_security_group.shop_api.id]
+    subnet_ids                  = data.terraform_remote_state.network.outputs.vpc.private_subnet_ids
+  }
+
   lifecycle {
     ignore_changes = [image_uri]
   }

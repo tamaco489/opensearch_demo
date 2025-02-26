@@ -45,8 +45,9 @@ resource "aws_iam_role" "shop_api" {
 # }
 
 
-# 予め定義しておいた、Lambda共通のポリシー（ログ関連）をアタッチする
-resource "aws_iam_role_policy_attachment" "shop_api_logs" {
-  policy_arn = data.terraform_remote_state.lambda.outputs.iam.lambda_logging_policy_arn
+# NOTE: VPC Lambda として稼働させるために最低限必要になる権限を関連付ける（ENI作成、削除、CloudWatch Logsへの書き込み等）
+# https://docs.aws.amazon.com/ja_jp/aws-managed-policy/latest/reference/AWSLambdaVPCAccessExecutionRole.html
+resource "aws_iam_role_policy_attachment" "shop_api_execution_role" {
   role       = aws_iam_role.shop_api.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole"
 }
